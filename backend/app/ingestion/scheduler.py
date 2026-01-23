@@ -2,7 +2,7 @@
 Scheduler for periodic data updates and ingestion tasks.
 """
 from typing import Callable
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.core.logging import logger
 
 
@@ -33,14 +33,14 @@ class DataScheduler:
             "function": task_func,
             "interval": interval_minutes,
             "last_run": None,
-            "next_run": datetime.utcnow()
+            "next_run": datetime.now(timezone.utc)
         }
         self.tasks.append(task)
         logger.info(f"Scheduled task: {task_name} (interval: {interval_minutes} minutes)")
     
     def run_pending(self):
         """Execute any tasks that are due to run."""
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         
         for task in self.tasks:
             if task["next_run"] <= current_time:
