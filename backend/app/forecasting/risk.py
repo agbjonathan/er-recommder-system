@@ -22,28 +22,29 @@ def assess_overcrowding_risk(
     Returns:
         Dict: Risk assessment with level and details
     """
-    risk_levels = {
-        "low": {"threshold": 60, "color": "green"},
-        "moderate": {"threshold": 90, "color": "yellow"},
-        "high": {"threshold": 120, "color": "orange"},
-        "critical": {"threshold": float("inf"), "color": "red"}
-    }
+    risk_levels = [
+        ("low", 60, "green"),
+        ("moderate", 90, "yellow"),
+        ("high", 120, "orange"),
+        ("critical", float("inf"), "red")
+    ]
     
     max_wait = max(current_wait_time, predicted_wait_time)
     
     risk_level = "low"
-    for level, config in risk_levels.items():
-        if max_wait >= config["threshold"]:
-            continue
-        risk_level = level
-        break
+    risk_color = "green"
+    for level, threshold, color in risk_levels:
+        if max_wait < threshold:
+            risk_level = level
+            risk_color = color
+            break
     
     return {
         "risk_level": risk_level,
         "current_wait_minutes": current_wait_time,
         "predicted_wait_minutes": predicted_wait_time,
         "max_wait_minutes": max_wait,
-        "color": risk_levels[risk_level]["color"],
+        "color": risk_color,
         "is_overcrowded": max_wait >= capacity_threshold
     }
 

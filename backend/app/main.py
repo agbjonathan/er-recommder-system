@@ -5,6 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
+# Import routers
+from app.api import health, recommend, hospitals
+
 app = FastAPI(
     title="ER Recommender System API",
     description="API for recommending emergency room facilities based on wait times and proximity",
@@ -21,6 +24,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(health.router)
+app.include_router(recommend.router)
+app.include_router(hospitals.router)
 
 
 @app.get("/")
