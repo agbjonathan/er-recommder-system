@@ -3,7 +3,7 @@ Recommendation schema definitions for API responses.
 """
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class LocationInput(BaseModel):
@@ -42,7 +42,7 @@ class RecommendationResponse(BaseModel):
     user_location: LocationInput
     search_radius_km: float
     severity: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     total_results: int
     
     class Config:

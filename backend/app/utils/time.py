@@ -1,7 +1,7 @@
 """
 Time utility functions for date/time operations.
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import pytz
 
@@ -13,7 +13,7 @@ def get_current_utc_time() -> datetime:
     Returns:
         datetime: Current UTC datetime
     """
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)
 
 
 def get_current_time_in_timezone(timezone: str = "America/Montreal") -> datetime:
