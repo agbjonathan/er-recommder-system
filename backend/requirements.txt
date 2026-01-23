@@ -1,7 +1,7 @@
 # Python dependencies for ER Recommender System Backend
 
 # Web Framework
-fastapi==0.109.0
+fastapi==0.109.1
 uvicorn[standard]==0.27.0
 pydantic==2.5.3
 pydantic-settings==2.1.0
@@ -37,4 +37,4 @@ flake8==7.0.0
 mypy==1.8.0
 
 # CORS
-python-multipart==0.0.6
+python-multipart==0.0.18
