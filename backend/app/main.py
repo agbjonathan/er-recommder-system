@@ -7,6 +7,9 @@ import os
 
 # Import routers
 from app.api import health, recommend, hospitals
+from app.core import config, logging, security
+
+logging.setup_logging()
 
 app = FastAPI(
     title="ER Recommender System API",
@@ -14,12 +17,15 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Security headers
+app.add_middleware(security.SecurityHeadersMiddleware)
+
 # Configure CORS - use environment variable for allowed origins
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+# allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],  # In production, specify allowed origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,6 +47,6 @@ async def root():
     }
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8000)

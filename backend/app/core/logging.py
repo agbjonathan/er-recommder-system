@@ -6,10 +6,11 @@ import sys
 from typing import Optional
 
 
-def setup_logging(
-    level: str = "INFO",
-    format_string: Optional[str] = None
-) -> logging.Logger:
+def setup_logging ():
+# (
+#     level: str = "INFO",
+#     format_string: Optional[str] = None
+# ) -> logging.Logger:
     """
     Setup application logging.
     
@@ -20,23 +21,27 @@ def setup_logging(
     Returns:
         logging.Logger: Configured logger instance
     """
-    if format_string is None:
-        format_string = (
-            "%(asctime)s - %(name)s - %(levelname)s - "
-            "%(funcName)s:%(lineno)d - %(message)s"
-        )
+    # if format_string is None:
+    #     format_string = (
+    #         "%(asctime)s - %(name)s - %(levelname)s - "
+    #         "%(funcName)s:%(lineno)d - %(message)s"
+    #     )
     
+    # logging.basicConfig(
+    #     level=getattr(logging, level.upper()),
+    #     format=format_string,
+    #     handlers=[
+    #         logging.StreamHandler(sys.stdout)
+    #     ]
+    # )
+    
+    # logger = logging.getLogger("er_recommender")
+    # return logger
     logging.basicConfig(
-        level=getattr(logging, level.upper()),
-        format=format_string,
-        handlers=[
-            logging.StreamHandler(sys.stdout)
-        ]
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
-    
-    logger = logging.getLogger("er_recommender")
-    return logger
 
 
 # Global logger instance
-logger = setup_logging()
+# logger = setup_logging()
