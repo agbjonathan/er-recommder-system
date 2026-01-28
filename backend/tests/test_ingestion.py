@@ -2,9 +2,9 @@
 Tests for data ingestion functionality.
 """
 import pytest
-from backend.app.ingestion.base import validate_hospital_data
-from backend.app.ingestion.hospital_loader import enrich_hospital_data
-from backend.app.ingestion.main import DataScheduler
+from app.ingestion.csv_loader import validate_hospital_data
+from app.ingestion.enrichment import enrich_hospital_data
+from app.ingestion.scheduler import DataScheduler
 
 
 class TestCSVLoader:
