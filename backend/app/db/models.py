@@ -1,7 +1,7 @@
 """
 Database models for the ER Recommender System.
 """
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, UniqueConstraint
 from sqlalchemy.sql import func
 from app.db.base import Base
 
@@ -28,6 +28,14 @@ class Hospital(Base):
 class ERSnapshot(Base):
     __tablename__ = "er_snapshots"
 
+    __table_args__ = (
+        UniqueConstraint(
+            "hospital_id",
+            "snapshot_time",
+            name="uq_er_snapshot_hospital_time"
+        ),
+    )
+
     id = Column(Integer, primary_key=True)
     hospital_id = Column(
         Integer,
@@ -49,9 +57,10 @@ class ERSnapshot(Base):
     avg_stay_ambulatory = Column(Float)     
 
     snapshot_time = Column(DateTime(timezone=True), nullable=False)
-    published_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True))
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
 
 
 
@@ -69,6 +78,8 @@ class Forecast(Base):
 
     forecast_time = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
 
 class ForecastError(Base):
     __tablename__ = "forecast_errors"

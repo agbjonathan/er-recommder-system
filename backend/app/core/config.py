@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     
     APP_NAME: str = "Er Recommender System"
     APP_ENV: str = "local"
+    database_url: str
 
     class Config:
         env_file = ".env"

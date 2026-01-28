@@ -8,6 +8,7 @@ import os
 # Import routers
 from app.api import health, recommend, hospitals
 from app.core import config, logging, security
+from app.scheduler import start_scheduler
 
 logging.setup_logging()
 
@@ -45,6 +46,11 @@ async def root():
         "version": "1.0.0",
         "status": "running"
     }
+
+# Start the scheduler for periodic tasks
+@app.on_event("startup")
+def startup_event():
+    start_scheduler()
 
 
 # if __name__ == "__main__":
