@@ -1,9 +1,16 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.ingestion.main import run_ingestion
-from datetime import datetime
+from datetime import datetime, timezone
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(run_ingestion, "interval", hours=0.05, next_run_time=datetime.now())
 
 def start_scheduler():
+    scheduler.add_job(
+        run_ingestion,
+        "interval",
+        minutes=3,
+        next_run_time=datetime.now(timezone.utc),
+        id="run_ingestion_job",
+        replace_existing=True,
+    )
     scheduler.start()
