@@ -4,10 +4,10 @@ Health check endpoint for monitoring service status.
 from fastapi import APIRouter
 from datetime import datetime, timezone
 
-router = APIRouter(prefix="/health", tags=["health"])
+router = APIRouter()
 
 
-@router.get("")
+@router.get("/health")
 async def health_check():
     """
     Health check endpoint.
