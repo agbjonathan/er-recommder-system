@@ -57,7 +57,7 @@ class ERSnapshot(Base):
     avg_stay_ambulatory = Column(Float)     
 
     snapshot_time = Column(DateTime(timezone=True), nullable=False)
-    published_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True))
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
