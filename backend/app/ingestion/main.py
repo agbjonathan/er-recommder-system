@@ -14,30 +14,32 @@ def load_hospital_map(db):
 def run_ingestion():
     logger.info("INGESTION STARTED")
     db = SessionLocal()
+    try:
+        df = fetch_dataset()
+        df = clean_dataframe(df)
 
-    df = fetch_dataset()
-    df = clean_dataframe(df)
+        hospital_map = load_hospital_map(db)
+        count = 0
 
-    hospital_map = load_hospital_map(db)
-    count = 0
+        for _, row in df.iterrows():
+            permit_id = row["No_permis_installation"]
 
-    for _, row in df.iterrows():
-        permit_id = row["No_permis_installation"]
+            hospital = hospital_map.get(permit_id)
 
-        hospital = hospital_map.get(permit_id)
+            if not hospital:
+                hospital = get_or_create_hospital(db, row)
+                hospital_map[permit_id] = hospital
 
-        if not hospital:
-            hospital = get_or_create_hospital(db, row)
-            hospital_map[permit_id] = hospital
+            insert_snapshot(db, hospital.id, row)
+            count += 1
 
-        insert_snapshot(db, hospital.id, row)
-        count += 1
-
-    db.commit()
-    logger.info(f"INGESTION COMPLETED: {count} snapshots inserted")
-
-    db.close()
-
-
+        db.commit()
+        logger.info(f"INGESTION COMPLETED: {count} snapshots inserted")
+    except Exception:
+        db.rollback()
+        logger.exception("INGESTION FAILED, transaction rolled back")
+        raise
+    finally:
+        db.close()
 if __name__ == "__main__":
     run_ingestion()
