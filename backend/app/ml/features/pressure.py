@@ -6,11 +6,11 @@ def compute_pressure_score(snapshot):
 
     # Safety guards
     total = max(snapshot.patients_total, 1)
-    stretchers = max(snapshot.functional_stretchers, 1)
+    stretchers = max(snapshot["functional_stretchers"], 1)
 
-    stretcher_ratio = snapshot.occupied_stretchers / stretchers
-    waiting_ratio = snapshot.patients_waiting_mc / total
-    long_stay_ratio = snapshot.patients_over_24h / total
+    stretcher_ratio = snapshot["occupied_stretchers"] / stretchers
+    waiting_ratio = snapshot["patients_waiting_mc"] / total
+    long_stay_ratio = snapshot["patients_over_24h"] / total
 
     # Weighted formula (can evolve later)
     pressure = (
