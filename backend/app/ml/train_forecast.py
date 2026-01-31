@@ -33,7 +33,7 @@ def train_arima_for_hospital(hospital_id: int):
     forecast = model_fit.forecast(steps=1)
     predicted_pressure = float(forecast.iloc[0])
 
-    print(f"\n🔮 Predicted pressure next hour: {predicted_pressure:.3f}")
+    print(f"\n Predicted pressure next hour: {predicted_pressure:.3f}")
 
     db.close()
 
