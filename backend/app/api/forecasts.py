@@ -43,7 +43,7 @@ def get_latest_forecasts(horizon: int = 1, db: Session = Depends(get_db)):
             "hospital_id": hospital.id,
             "hospital_name": hospital.name,
             "predicted_pressure": round(forecast.predicted_pressure, 3),
-            "risk_level": pressure_to_risk(forecast.predicted_pressure),
+            "risk_level": forecast.risk_level,
             "forecast_time": forecast.forecast_time
         })
 

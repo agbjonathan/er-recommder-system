@@ -4,6 +4,8 @@ from statsmodels.tsa.arima.model import ARIMA
 from datetime import timedelta
 
 from app.ml.datasets.snapshot_dataset import build_ml_dataset
+from app.ml.risk import pressure_to_risk
+
 
 
 def train_and_forecast(db: Session, horizon_hours: int = 1):
@@ -34,6 +36,7 @@ def train_and_forecast(db: Session, horizon_hours: int = 1):
             model_fit = model.fit()
 
             forecast_value = model_fit.forecast(steps=1).iloc[0]
+            risk_level = pressure_to_risk(forecast_value)
 
             last_time = hospital_df["snapshot_time"].max()
             forecast_time = last_time + timedelta(hours=horizon_hours)
@@ -43,6 +46,7 @@ def train_and_forecast(db: Session, horizon_hours: int = 1):
                 "predicted_pressure": float(forecast_value),
                 "forecast_time": forecast_time,
                 "horizon_hours": horizon_hours,
+                "risk_level": risk_level,
             })
 
         except Exception as e:

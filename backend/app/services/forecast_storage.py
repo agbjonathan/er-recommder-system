@@ -16,6 +16,7 @@ def save_forecasts(db: Session, predictions: list):
             predicted_pressure=to_python(p["predicted_pressure"]),
             forecast_time=to_python(p["forecast_time"]),
             horizon_hours=int(to_python(p["horizon_hours"])),
+            risk_level=to_python(p["risk_level"]),
         )
         db.add(forecast)
 
