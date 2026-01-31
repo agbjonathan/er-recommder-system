@@ -76,6 +76,8 @@ class Forecast(Base):
     lower_bound = Column(Float)
     upper_bound = Column(Float)
 
+    risk_level = Column(String, nullable=False)
+
     forecast_time = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

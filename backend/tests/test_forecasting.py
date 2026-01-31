@@ -2,9 +2,9 @@
 Tests for forecasting functionality.
 """
 import pytest
-from app.forecasting.arima import ARIMAForecaster, auto_arima
-from app.forecasting.risk import assess_overcrowding_risk, calculate_risk_score
-from app.forecasting.features import extract_temporal_features
+from backend.app.ml.train_forecast import ARIMAForecaster, auto_arima
+from app.ml.risk import assess_overcrowding_risk, calculate_risk_score
+from backend.app.ml.features.feature_builder import extract_temporal_features
 from datetime import datetime
 
 

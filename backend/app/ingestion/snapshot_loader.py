@@ -3,6 +3,7 @@ from app.db.models import ERSnapshot
 from sqlalchemy.dialects.postgresql import insert
 
 def insert_snapshot(db, hospital_id, row):
+    
     stmt = (
         insert(ERSnapshot)
         .values(
