@@ -8,7 +8,7 @@ def start_scheduler():
     scheduler.add_job(
         run_ingestion,
         "interval",
-        minutes=3,
+        hours=1,
         next_run_time=datetime.now(timezone.utc),
         id="run_ingestion_job",
         replace_existing=True,
