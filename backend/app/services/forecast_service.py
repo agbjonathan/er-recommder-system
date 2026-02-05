@@ -5,6 +5,7 @@ from datetime import timedelta
 
 from app.ml.datasets.snapshot_dataset import build_ml_dataset
 from app.ml.risk import pressure_to_risk
+from app.core.logging import logger
 
 
 
@@ -50,6 +51,7 @@ def train_and_forecast(db: Session, horizon_hours: int = 1):
             })
 
         except Exception as e:
-            print(f"Model failed for hospital {hospital_id}: {e}")
+            # print(f"Model failed for hospital {hospital_id}: {e}")
+            logger.warning(f"Model failed for hospital {hospital_id}: {e}")
 
     return predictions

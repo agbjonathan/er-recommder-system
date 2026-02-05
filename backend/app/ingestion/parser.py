@@ -20,7 +20,7 @@ def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["snapshot_time"] = pd.to_datetime(df["Heure_de_lextraction_(image)"])
     df["updated_at"] = pd.to_datetime(df["Mise_a_jour"])
 
-    print(df.columns.tolist())
+    # print(df.columns.tolist())
 
     return df
 
