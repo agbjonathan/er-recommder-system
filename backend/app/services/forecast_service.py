@@ -35,8 +35,9 @@ def train_and_forecast(db: Session, horizon_hours: int = 1):
         try:
             model = ARIMA(series, order=(2, 1, 2))
             model_fit = model.fit()
+            forecast_series = model_fit.forecast(steps=horizon_hours)
 
-            forecast_value = model_fit.forecast(steps=1).iloc[0]
+            forecast_value = forecast_series.iloc[-1]
             risk_level = pressure_to_risk(forecast_value)
 
             last_time = hospital_df["snapshot_time"].max()
