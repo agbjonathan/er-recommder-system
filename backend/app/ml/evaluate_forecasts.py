@@ -53,8 +53,8 @@ def evaluate_forecasts():
                 observed_pressure=observed_pressure,
                 absolute_error=abs(error),
                 squared_error=error**2,
-                # horizon_hours=f.horizon_hours,
-                # forecast_time=f.forecast_time,
+                horizon_hours=f.horizon_hours,
+                forecast_time=f.forecast_time,
             )
 
             db.add(error_record)

@@ -98,4 +98,7 @@ class ForecastError(Base):
     absolute_error = Column(Float, nullable=False)
     squared_error = Column(Float, nullable=False)
 
+    horizon_hours = Column(Integer, nullable=False)
+    forecast_time = Column(DateTime(timezone=True), nullable=False)
+
     evaluated_at = Column(DateTime(timezone=True), server_default=func.now())
