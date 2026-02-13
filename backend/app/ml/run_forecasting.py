@@ -10,7 +10,7 @@ def run_forecasting():
 
     if predictions:
         save_forecasts(db, predictions)
-        print(f"Saved {len(predictions)} forecasts")
+        # print(f"Saved {len(predictions)} forecasts")
 
     db.close()
 
