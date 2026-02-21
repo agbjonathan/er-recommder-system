@@ -6,11 +6,13 @@ from app.services.forecast_storage import save_forecasts
 def run_forecasting():
     db = SessionLocal()
 
-    predictions = train_and_forecast(db)
+    horizon_hours = [1,2,4]
 
-    if predictions:
-        save_forecasts(db, predictions)
-        # print(f"Saved {len(predictions)} forecasts")
+    for h in horizon_hours: 
+        predictions = train_and_forecast(db, h)
+        if predictions:
+            save_forecasts(db, predictions)
+
 
     db.close()
 
