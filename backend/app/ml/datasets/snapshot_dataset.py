@@ -51,17 +51,26 @@ def build_ml_dataset(db: Session, horizon_hours: int = 1) -> pd.DataFrame:
     Full pipeline: DB → Features → Targets
     """
 
-    #  Load raw data
+
     df = load_snapshots_df(db)
 
-    #  Build features
+    
     df = build_features(df)
 
-    #  Add prediction target
+    
+    true_latest_times = df.groupby("hospital_id")["snapshot_time"].max()
+
+    
     df = add_forecast_targets(df, horizon_hours=horizon_hours)
 
-    #  Drop rows without full history or future target
+    
     df = df.dropna()
+
+
+    df = df.merge(
+        true_latest_times.rename("true_latest_snapshot_time"),
+        on="hospital_id"
+    )
 
     return df
 
