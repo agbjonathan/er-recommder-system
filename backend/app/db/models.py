@@ -67,6 +67,10 @@ class ERSnapshot(Base):
 class Forecast(Base):
     __tablename__ = "forecasts"
 
+    __table_args__ = (
+        UniqueConstraint("hospital_id", "forecast_time", "horizon_hours", name="uq_forecast_unique"),
+    )
+
     id = Column(Integer, primary_key=True)
     hospital_id = Column(Integer, index=True)
 
