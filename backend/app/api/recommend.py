@@ -61,8 +61,11 @@ async def get_recommendations(
             candidates.append({
                 "hospital_id": h.id,
                 "name": h.name,
+                "hospital_latitude": h.latitude,
+                "hospital_longitude": h.longitude,
                 "distance_km": round(distance, 2),
                 "predicted_pressure": forecast.predicted_pressure if forecast else None,
+                "risk_level": forecast.risk_level if forecast else None,
                 "forecast_time": forecast.forecast_time if forecast else None,
             })
 
