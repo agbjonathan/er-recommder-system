@@ -6,7 +6,7 @@ from typing import Optional
 import pytz
 
 
-def get_current_utc_time() -> datetime:
+def get_current_time() -> datetime:
     """
     Get current UTC time.
     
