@@ -40,7 +40,7 @@ def train_and_forecast(db: Session, horizon_hours: int = 1):
             forecast_value = forecast_series.iloc[-1]
             risk_level = pressure_to_risk(forecast_value)
 
-            last_time = hospital_df["snapshot_time"].max()
+            last_time = hospital_df["true_latest_snapshot_time"].iloc[0]
             forecast_time = last_time + timedelta(hours=horizon_hours)
 
             predictions.append({
