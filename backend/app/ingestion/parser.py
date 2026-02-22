@@ -22,11 +22,11 @@ def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["No_permis_installation"] = df["No_permis_installation"].astype(str)
     df["snapshot_time"] = (
         pd.to_datetime(df["Heure_de_lextraction_(image)"])
-        .dt.tz_localize("America/Montreal", ambiguous="infer", nonexistent="shift_forward")
+        .dt.tz_localize(MONTREAL_TZ, ambiguous="infer", nonexistent="shift_forward")
     )
     df["updated_at"] = (
         pd.to_datetime(df["Mise_a_jour"])
-        .dt.tz_localize("America/Montreal", ambiguous="infer", nonexistent="shift_forward")
+        .dt.tz_localize(MONTREAL_TZ, ambiguous="infer", nonexistent="shift_forward")
     )
 
     # print(df.columns.tolist())
