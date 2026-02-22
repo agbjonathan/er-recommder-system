@@ -28,9 +28,10 @@ async def get_recommendations(
         latitude: User's latitude coordinate
         longitude: User's longitude coordinate
         max_distance: Maximum distance to search for facilities
-        
+        limit: maximum number of recommendations to return
+        db: Database session dependency
     Returns:
-        dict: List of recommended ER facilities
+        dict: List of recommended ER facilities and user location
     """
     now = get_current_time()
 
@@ -66,8 +67,9 @@ async def get_recommendations(
             })
 
     candidates.sort(
-        key=lambda x: (x["predicted_pressure"], x["distance_km"])
-    )
+        key=lambda x: (x["predicted_pressure"] if x["predicted_pressure"] is not None else float('inf'), 
+                       x["distance_km"]))
+    
     return { "results": candidates[:limit] ,
             "user_location": {"latitude": latitude, "longitude": longitude}
             }
