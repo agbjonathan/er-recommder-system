@@ -61,18 +61,17 @@ def parse_timestamp(date_string: str, format_str: str = "%Y-%m-%d %H:%M:%S") -> 
         return None
 
 
-def add_minutes(dt: datetime, minutes: int) -> datetime:
+def delta_hours(hours: int) -> datetime:
     """
-    Add minutes to a datetime.
+    return hours to a datetime for operations
     
     Args:
-        dt: Base datetime
-        minutes: Number of minutes to add
+        hours: Number of hours to operate with
         
     Returns:
-        datetime: New datetime with minutes added
+        datetime: New datetime with hours added
     """
-    return dt + timedelta(minutes=minutes)
+    return timedelta(hours=hours)
 
 
 def get_time_difference_minutes(dt1: datetime, dt2: datetime) -> float:

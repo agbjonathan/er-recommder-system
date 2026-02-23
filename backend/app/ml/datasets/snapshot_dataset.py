@@ -3,13 +3,20 @@ from sqlalchemy.orm import Session
 
 from app.db.models import ERSnapshot
 from app.ml.features.feature_builder import build_features
+from app.utils.time import delta_hours, get_current_time
 
-def load_snapshots_df(db: Session) -> pd.DataFrame:
+def load_snapshots_df(db: Session, lookback_hours:int 72) -> pd.DataFrame:
     """
-    Load ER snapshots from database into a pandas DataFrame.
+    Load ER snapshots from the last 3 days from database into a pandas DataFrame.
     """
 
-    snapshots = db.query(ERSnapshot).all()
+    cutoff = get_current_time() - delta_hours(lookback_hours)
+    snapshots = (
+        db.query(ERSnapshot)
+        .filter(ERSnapshot.snapshot_time >= cutoff)
+        .order_by(ERSnapshot.hospital_id, ERSnapshot.snapshot_time)
+        .all()
+    )
 
     data = [
         {
