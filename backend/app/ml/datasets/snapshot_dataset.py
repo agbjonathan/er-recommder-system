@@ -5,12 +5,13 @@ from app.db.models import ERSnapshot
 from app.ml.features.feature_builder import build_features
 from app.utils.time import delta_hours, get_current_time
 
-def load_snapshots_df(db: Session, lookback_hours:int 72) -> pd.DataFrame:
+def load_snapshots_df(db: Session, lookback_hours:int = 72) -> pd.DataFrame:
     """
     Load ER snapshots from the last 3 days from database into a pandas DataFrame.
     """
 
     cutoff = get_current_time() - delta_hours(lookback_hours)
+    
     snapshots = (
         db.query(ERSnapshot)
         .filter(ERSnapshot.snapshot_time >= cutoff)
