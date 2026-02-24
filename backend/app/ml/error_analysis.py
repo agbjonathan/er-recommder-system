@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from app.db.models import ForecastError
+from app.utils.time import get_current_time, delta_hours
 
 def get_recent_bias(
     db: Session,
@@ -9,7 +9,7 @@ def get_recent_bias(
     lookback_hours: int = 24,
 ) -> float:
     """Mean signed error over recent window. Positive = model over-predicts."""
-    cutoff = datetime.utcnow() - timedelta(hours=lookback_hours)
+    cutoff = get_current_time() - delta_hours(lookback_hours)
     errors = (
         db.query(ForecastError)
         .filter(
@@ -32,7 +32,7 @@ def should_retrain(
     lookback_hours: int = 24,
 ) -> bool:
     """Returns True if recent MAE exceeds threshold."""
-    cutoff = datetime.utcnow() - timedelta(hours=lookback_hours)
+    cutoff = get_current_time() - delta_hours(lookback_hours)
     errors = (
         db.query(ForecastError)
         .filter(
