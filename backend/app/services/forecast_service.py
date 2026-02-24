@@ -11,54 +11,6 @@ from app.ml.error_analysis import get_recent_bias, should_retrain
 # Module-level cache: {(hospital_id, horizon_hours): model_fit}
 _model_cache: dict = {}
 
-# def train_and_forecast(db: Session, horizon_hours: int = 1):
-#     """
-#     Train forecasting model for each hospital
-#     and return next-hour pressure predictions.
-#     """
-
-#     df = build_ml_dataset(db, horizon_hours=horizon_hours)
-
-#     predictions = []
-
-#     hospitals = df["hospital_id"].unique()
-
-#     for hospital_id in hospitals:
-#         hospital_df = df[df["hospital_id"] == hospital_id].copy()
-
-#         # Need enough history
-#         if len(hospital_df) < 10:
-#             continue
-
-#         hospital_df = hospital_df.sort_values("snapshot_time")
-
-#         series = hospital_df["pressure_score"]
-
-#         try:
-#             model = ARIMA(series, order=(2, 1, 2))
-#             model_fit = model.fit()
-#             forecast_series = model_fit.forecast(steps=horizon_hours)
-
-#             forecast_value = forecast_series.iloc[-1]
-#             risk_level = pressure_to_risk(forecast_value)
-
-#             last_time = hospital_df["true_latest_snapshot_time"].iloc[0]
-#             forecast_time = last_time + timedelta(hours=horizon_hours)
-
-#             predictions.append({
-#                 "hospital_id": hospital_id,
-#                 "predicted_pressure": float(forecast_value),
-#                 "forecast_time": forecast_time,
-#                 "horizon_hours": horizon_hours,
-#                 "risk_level": risk_level,
-#             })
-
-#         except Exception as e:
-#             # print(f"Model failed for hospital {hospital_id}: {e}")
-#             logger.warning(f"Model failed for hospital {hospital_id}: {e}")
-
-#     return predictions
-
 def train_and_forecast(db: Session, horizon_hours: int = 1):
     df = build_ml_dataset(db, horizon_hours=horizon_hours)
     predictions = []
