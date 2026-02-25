@@ -36,7 +36,7 @@ def load_snapshots_df(db: Session, lookback_hours:int = 72) -> pd.DataFrame:
     df = pd.DataFrame(data)
 
     # Ensure datetime type
-    df["snapshot_time"] = pd.to_datetime(df["snapshot_time"])
+    df["snapshot_time"] = pd.to_datetime(df["snapshot_time"], utc=True)
 
     return df
 
