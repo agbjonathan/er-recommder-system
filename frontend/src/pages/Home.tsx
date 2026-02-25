@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getRecommendations } from '../api/client';
 import type { Hospital } from '../api/client';
 import { useLang } from '../i18n/LangContext';
+import FeedbackWidget from '../components/FeedbackWidget';
 
 export default function Home() {
   const { t } = useLang();
@@ -244,6 +245,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Inline feedback */}
+      <FeedbackWidget variant="inline" />
     </div>
   );
 }

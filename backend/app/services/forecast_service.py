@@ -1,7 +1,8 @@
 import pandas as pd
 from sqlalchemy.orm import Session
+from app.utils.time import get_current_time
 from statsmodels.tsa.arima.model import ARIMA
-from datetime import timedelta
+from datetime import timedelta, timezone
 
 from app.ml.datasets.snapshot_dataset import build_ml_dataset
 from app.ml.risk import pressure_to_risk
@@ -49,6 +50,17 @@ def train_and_forecast(db: Session, horizon_hours: int = 1):
 
             risk_level = pressure_to_risk(forecast_value)
             last_time = hospital_df["true_latest_snapshot_time"].iloc[0]
+
+            now = get_current_time()
+            if last_time.tzinfo is None:
+                last_time = last_time.replace(tzinfo=timezone.utc)
+
+            if last_time > now:
+                logger.error(
+                    f"Hospital {hospital_id}: true_latest_snapshot_time {last_time} is in the future! "
+                    f"Skipping to avoid corrupt forecast."
+                )
+                continue
 
             predictions.append({
                 "hospital_id": hospital_id,

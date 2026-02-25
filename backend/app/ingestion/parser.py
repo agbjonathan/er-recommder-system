@@ -23,10 +23,12 @@ def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["snapshot_time"] = (
         pd.to_datetime(df["Heure_de_lextraction_(image)"])
         .dt.tz_localize("America/Montreal", ambiguous="infer", nonexistent="shift_forward")
+        .dt.tz_convert("UTC")
     )
     df["updated_at"] = (
         pd.to_datetime(df["Mise_a_jour"])
         .dt.tz_localize("America/Montreal", ambiguous="infer", nonexistent="shift_forward")
+        .dt.tz_convert("UTC")
     )
 
     # print(df.columns.tolist())
