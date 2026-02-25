@@ -79,6 +79,7 @@ export const translations = {
       demo_note: 'Demo portfolio project.',
       tagline: 'Built to showcase full-stack ML + React development.',
       emergency: 'In an emergency, always call 911.',
+      tagline: 'Built to showcase full-stack ML + React development.',
     },
   },
 
