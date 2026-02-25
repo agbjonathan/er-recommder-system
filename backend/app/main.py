@@ -33,10 +33,10 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(health.router)
-app.include_router(recommend.router)
-app.include_router(hospitals.router)
-app.include_router(forecasts.router)
+app.include_router(health.router, prefix="/api")
+app.include_router(recommend.router, prefix="/api")
+app.include_router(hospitals.router, prefix="/api")
+app.include_router(forecasts.router, prefix="/api")
 
 
 @app.get("/")
