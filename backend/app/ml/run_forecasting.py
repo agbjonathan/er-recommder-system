@@ -11,7 +11,7 @@ def run_forecasting():
     for h in horizon_hours: 
         predictions = train_and_forecast(db, h)
         if predictions:
-            save_forecasts(db, predictions)
+            save_forecasts(db, predictions,h)
 
 
     db.close()
