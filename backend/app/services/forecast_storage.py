@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.postgresql import insert
 from app.db.models import Forecast
 from datetime import datetime
 import pandas as pd
@@ -8,17 +9,22 @@ import pandas as pd
 def save_forecasts(db: Session, predictions: list):
     """
     Save ML forecast results into the database.
+    Skips forecasts that already exist (same hospital, time, horizon).
     """
 
     for p in predictions:
-        forecast = Forecast(
-            hospital_id=int(to_python(p["hospital_id"])),
-            predicted_pressure=to_python(p["predicted_pressure"]),
-            forecast_time=to_python(p["forecast_time"]),
-            horizon_hours=int(to_python(p["horizon_hours"])),
-            risk_level=to_python(p["risk_level"]),
+        stmt = (
+            insert(Forecast)
+            .values(
+                hospital_id=int(to_python(p["hospital_id"])),
+                predicted_pressure=to_python(p["predicted_pressure"]),
+                forecast_time=to_python(p["forecast_time"]),
+                horizon_hours=int(to_python(p["horizon_hours"])),
+                risk_level=to_python(p["risk_level"]),
+            )
+            .on_conflict_do_nothing(constraint="uq_forecast_unique")
         )
-        db.add(forecast)
+        db.execute(stmt)
 
     db.commit()
 

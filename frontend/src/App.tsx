@@ -21,6 +21,7 @@ function Layout() {
 
   return (
     <div className="app-shell">
+
       <header className="app-header">
         <div className="header-inner">
           <div className="brand">
@@ -65,12 +66,12 @@ function Layout() {
             <span>{t.footer.demo_note}</span>
             <span className="footer-dot">·</span>
             <a
-              href="https://yourwebsite.com"
+              href="https://jonathan-agba.com"
               target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
             >
-              {t.footer.visit} ↗
+              Jonathan Agba ↗
             </a>
           </div>
           <div className="footer-tagline">{t.footer.tagline}</div>

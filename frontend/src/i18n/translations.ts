@@ -2,6 +2,9 @@ export type Lang = 'en' | 'fr';
 
 export const translations = {
   en: {
+    banner: {
+      text: "Technical PoC · Predictive model at 83% accuracy · Not intended for clinical triage. In an emergency, contact emergency services immediately.",
+    },
     nav: {
       home: 'Home',
       map: 'Map',
@@ -11,8 +14,19 @@ export const translations = {
       hero_title: 'Find Your Nearest',
       hero_title_highlight: 'Emergency Room',
       hero_subtitle: 'Real-time congestion forecasts to help you make faster, smarter decisions in critical moments.',
-      disclaimer_title: '⚠️ Demo Project — Please Read',
-      disclaimer_body: 'This is a portfolio demonstration project. In a real emergency, always call 911 or your local emergency number, or contact your personal doctor directly. Do not rely on this tool for actual medical emergencies.',
+
+      // Inline context banner
+      context_title: 'Who is this tool for?',
+      context_body: 'This tool is designed for Level 3 situations — non-life-threatening but requiring medical attention. You can get to the ER yourself, but triage priority is set by health professionals on-site.',
+      context_examples: [
+        'Probable fracture',
+        'Severe but stable pain',
+        'Deep laceration',
+        'High fever (adult)',
+        'Moderate allergic reaction',
+      ],
+      context_note: 'Waiting time at the ER depends on triage, not arrival order. A less congested ER nearby may mean a significantly shorter overall experience.',
+
       address_label: 'Enter your address',
       address_placeholder: '123 Main Street, Montreal, QC...',
       btn_search: 'Search ERs Nearby',
@@ -20,9 +34,16 @@ export const translations = {
       locating: 'Locating...',
       searching: 'Searching...',
       results_title: 'Nearby Emergency Rooms',
+      results_hint: 'Ranked by distance × predicted congestion — a closer ER may rank lower if more congested.',
       km_away: 'km away',
+      forecasted_congestion: 'Forecasted congestion',
+      forecast_at: 'Est.',
       risk_unknown: 'Unknown',
-      pressure_label: 'Pressure',
+      cong_quiet:   'Quiet',
+      cong_calm:    'Calm',
+      cong_busy:    'Busy',
+      cong_crowded: 'Crowded',
+      cong_packed:  'Packed',
       risk_low: 'Low',
       risk_medium: 'Medium',
       risk_high: 'High',
@@ -41,13 +62,15 @@ export const translations = {
       unknown: 'Unknown',
     },
     footer: {
-      demo_note: 'This is a demo portfolio project.',
-      visit: 'Visit my website',
-      tagline: 'Built to showcase full-stack ML + React development.',
+      demo_note: 'Demo portfolio project.',
       emergency: 'In an emergency, always call 911.',
+      tagline: 'Built to showcase full-stack ML + React development.',
     },
   },
   fr: {
+    banner: {
+      text: "PoC Technique · Modèle prédictif à 83% de précision · Non destiné au triage clinique. En cas d'urgence, contactez immédiatement les services d'urgence.",
+    },
     nav: {
       home: 'Accueil',
       map: 'Carte',
@@ -57,8 +80,19 @@ export const translations = {
       hero_title: 'Trouvez la Meilleure',
       hero_title_highlight: 'Urgence Près de Vous',
       hero_subtitle: 'Prévisions de congestion en temps réel pour vous aider à prendre de meilleures décisions dans les moments critiques.',
-      disclaimer_title: '⚠️ Projet Démo — Veuillez Lire',
-      disclaimer_body: "Ceci est un projet de démonstration de portfolio. En cas d'urgence réelle, appelez toujours le 911 ou votre numéro d'urgence local, ou contactez directement votre médecin personnel. Ne vous fiez pas à cet outil pour de vraies urgences médicales.",
+
+      // Inline context banner
+      context_title: 'À qui s\'adresse cet outil ?',
+      context_body: 'Cet outil est conçu pour les situations de niveau 3 — non mortelles mais nécessitant une attention médicale. Vous pouvez vous rendre à l\'urgence par vos propres moyens, mais la priorité de triage est établie par les professionnels de santé sur place.',
+      context_examples: [
+        'Fracture probable',
+        'Douleur intense mais stable',
+        'Lacération profonde',
+        'Fièvre élevée (adulte)',
+        'Réaction allergique modérée',
+      ],
+      context_note: 'Le temps d\'attente à l\'urgence dépend du triage, pas de l\'ordre d\'arrivée. Une urgence moins encombrée à proximité peut réduire significativement l\'expérience globale.',
+
       address_label: 'Entrez votre adresse',
       address_placeholder: '123 rue Principale, Montréal, QC...',
       btn_search: 'Chercher les Urgences',
@@ -66,15 +100,22 @@ export const translations = {
       locating: 'Localisation...',
       searching: 'Recherche...',
       results_title: 'Urgences à Proximité',
+      results_hint: 'Classées par distance × congestion prévue — une urgence plus proche peut être classée plus bas si elle est plus encombrée.',
       km_away: 'km',
+      forecasted_congestion: 'Congestion prévue',
+      forecast_at: 'Prévu',
       risk_unknown: 'Inconnu',
-      pressure_label: 'Pression',
+      cong_quiet:   'Calme',
+      cong_calm:    'Tranquille',
+      cong_busy:    'Animé',
+      cong_crowded: 'Achalandé',
+      cong_packed:  'Bondé',
       risk_low: 'Faible',
       risk_medium: 'Moyen',
       risk_high: 'Élevé',
-      error_geo: 'Impossible d\'obtenir votre position. Veuillez entrer votre adresse manuellement.',
+      error_geo: "Impossible d'obtenir votre position. Veuillez entrer votre adresse manuellement.",
       error_fetch: 'Échec de la récupération. Veuillez réessayer.',
-      error_geo_unsupported: 'La géolocalisation n\'est pas supportée par votre navigateur.',
+      error_geo_unsupported: "La géolocalisation n'est pas supportée par votre navigateur.",
     },
     map: {
       title: 'Carte de Congestion des Urgences',
@@ -87,8 +128,7 @@ export const translations = {
       unknown: 'Inconnu',
     },
     footer: {
-      demo_note: "Ceci est un projet de portfolio de démonstration.",
-      visit: 'Visiter mon site',
+      demo_note: 'Projet de portfolio de démonstration.',
       tagline: 'Conçu pour démontrer le développement full-stack ML + React.',
       emergency: "En cas d'urgence, appelez toujours le 911.",
     },

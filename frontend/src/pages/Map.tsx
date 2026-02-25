@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import { getCongestionMap, CongestionFeature } from '../api/client';
+import { getCongestionMap } from '../api/client';
+import type { CongestionFeature } from '../api/client';
 import { useLang } from '../i18n/LangContext';
 import 'leaflet/dist/leaflet.css';
 
