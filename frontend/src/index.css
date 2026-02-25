@@ -460,6 +460,8 @@ body {
   border-radius: 50%;
   transition: background .3s;
 }
+.nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+.nav-link--active { color: var(--teal-light); background: rgba(13,148,136,.15); }
 
 /* Card footer */
 .card-footer-row {
