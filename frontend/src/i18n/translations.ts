@@ -14,8 +14,6 @@ export const translations = {
       hero_title: 'Find Your Nearest',
       hero_title_highlight: 'Emergency Room',
       hero_subtitle: 'Real-time congestion forecasts to help you make faster, smarter decisions in critical moments.',
-
-      // Inline context banner
       context_title: 'Who is this tool for?',
       context_body: 'This tool is designed for Level 3 situations — non-life-threatening but requiring medical attention. You can get to the ER yourself, but triage priority is set by health professionals on-site.',
       context_examples: [
@@ -24,9 +22,8 @@ export const translations = {
         'Deep laceration',
         'High fever (adult)',
         'Moderate allergic reaction',
-      ],
+      ] as string[],
       context_note: 'Waiting time at the ER depends on triage, not arrival order. A less congested ER nearby may mean a significantly shorter overall experience.',
-
       address_label: 'Enter your address',
       address_placeholder: '123 Main Street, Montreal, QC...',
       btn_search: 'Search ERs Nearby',
@@ -51,6 +48,23 @@ export const translations = {
       error_fetch: 'Failed to fetch recommendations. Please try again.',
       error_geo_unsupported: 'Geolocation is not supported by your browser.',
     },
+    feedback: {
+      inline_cta:           'Share your feedback',
+      inline_title:         'Your feedback',
+      floating_title:       'Feedback',
+      fab_label:            'Give feedback',
+      category_label:       'What is your feedback about?',
+      cat_ui:               'Interface',
+      cat_accuracy:         'Accuracy',
+      cat_suggestion:       'Suggestion',
+      message_placeholder:  'Tell us more (optional)…',
+      submit:               'Send',
+      sending:              'Sending…',
+      cancel:               'Cancel',
+      thanks:               'Thanks for your feedback!',
+      error_category:       'Please select a category.',
+      error_submit:         'Something went wrong. Please try again.',
+    },
     map: {
       title: 'ER Congestion Map',
       loading: 'Loading map...',
@@ -63,10 +77,12 @@ export const translations = {
     },
     footer: {
       demo_note: 'Demo portfolio project.',
+      tagline: 'Built to showcase full-stack ML + React development.',
       emergency: 'In an emergency, always call 911.',
       tagline: 'Built to showcase full-stack ML + React development.',
     },
   },
+
   fr: {
     banner: {
       text: "PoC Technique · Modèle prédictif à 83% de précision · Non destiné au triage clinique. En cas d'urgence, contactez immédiatement les services d'urgence.",
@@ -80,8 +96,6 @@ export const translations = {
       hero_title: 'Trouvez la Meilleure',
       hero_title_highlight: 'Urgence Près de Vous',
       hero_subtitle: 'Prévisions de congestion en temps réel pour vous aider à prendre de meilleures décisions dans les moments critiques.',
-
-      // Inline context banner
       context_title: 'À qui s\'adresse cet outil ?',
       context_body: 'Cet outil est conçu pour les situations de niveau 3 — non mortelles mais nécessitant une attention médicale. Vous pouvez vous rendre à l\'urgence par vos propres moyens, mais la priorité de triage est établie par les professionnels de santé sur place.',
       context_examples: [
@@ -90,9 +104,8 @@ export const translations = {
         'Lacération profonde',
         'Fièvre élevée (adulte)',
         'Réaction allergique modérée',
-      ],
+      ] as string[],
       context_note: 'Le temps d\'attente à l\'urgence dépend du triage, pas de l\'ordre d\'arrivée. Une urgence moins encombrée à proximité peut réduire significativement l\'expérience globale.',
-
       address_label: 'Entrez votre adresse',
       address_placeholder: '123 rue Principale, Montréal, QC...',
       btn_search: 'Chercher les Urgences',
@@ -116,6 +129,23 @@ export const translations = {
       error_geo: "Impossible d'obtenir votre position. Veuillez entrer votre adresse manuellement.",
       error_fetch: 'Échec de la récupération. Veuillez réessayer.',
       error_geo_unsupported: "La géolocalisation n'est pas supportée par votre navigateur.",
+    },
+    feedback: {
+      inline_cta:           'Donnez votre avis',
+      inline_title:         'Votre avis',
+      floating_title:       'Avis',
+      fab_label:            'Donner un avis',
+      category_label:       'Quel est le sujet de votre avis ?',
+      cat_ui:               'Interface',
+      cat_accuracy:         'Précision',
+      cat_suggestion:       'Suggestion',
+      message_placeholder:  'Dites-nous en plus (facultatif)…',
+      submit:               'Envoyer',
+      sending:              'Envoi…',
+      cancel:               'Annuler',
+      thanks:               'Merci pour votre avis !',
+      error_category:       'Veuillez sélectionner une catégorie.',
+      error_submit:         'Une erreur est survenue. Veuillez réessayer.',
     },
     map: {
       title: 'Carte de Congestion des Urgences',

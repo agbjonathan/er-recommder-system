@@ -2,15 +2,13 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import Home from './pages/Home';
 import Map from './pages/Map';
 import { LangProvider, useLang } from './i18n/LangContext';
+import FeedbackWidget from './components/FeedbackWidget';
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   const location = useLocation();
   const active = location.pathname === to;
   return (
-    <Link
-      to={to}
-      className={`nav-link ${active ? 'nav-link--active' : ''}`}
-    >
+    <Link to={to} className={`nav-link ${active ? 'nav-link--active' : ''}`}>
       {children}
     </Link>
   );
@@ -33,19 +31,9 @@ function Layout() {
             <NavLink to="/map">{t.nav.map}</NavLink>
           </nav>
           <div className="lang-switcher">
-            <button
-              onClick={() => setLang('en')}
-              className={`lang-btn ${lang === 'en' ? 'lang-btn--active' : ''}`}
-            >
-              EN
-            </button>
+            <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'lang-btn--active' : ''}`}>EN</button>
             <span className="lang-sep">|</span>
-            <button
-              onClick={() => setLang('fr')}
-              className={`lang-btn ${lang === 'fr' ? 'lang-btn--active' : ''}`}
-            >
-              FR
-            </button>
+            <button onClick={() => setLang('fr')} className={`lang-btn ${lang === 'fr' ? 'lang-btn--active' : ''}`}>FR</button>
           </div>
         </div>
       </header>
@@ -59,24 +47,18 @@ function Layout() {
 
       <footer className="app-footer">
         <div className="footer-inner">
-          <div className="footer-emergency">
-            🚨 {t.footer.emergency}
-          </div>
           <div className="footer-meta">
             <span>{t.footer.demo_note}</span>
             <span className="footer-dot">·</span>
-            <a
-              href="https://jonathan-agba.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-link"
-            >
+            <a href="https://jonathan-agba.com" target="_blank" rel="noopener noreferrer" className="footer-link">
               Jonathan Agba ↗
             </a>
           </div>
           <div className="footer-tagline">{t.footer.tagline}</div>
         </div>
       </footer>
+      {/* Floating feedback button — always visible */}
+      <FeedbackWidget variant="floating" />
     </div>
   );
 }

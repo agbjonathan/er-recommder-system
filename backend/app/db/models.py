@@ -1,7 +1,8 @@
 """
 Database models for the ER Recommender System.
 """
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, UniqueConstraint
+
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, UniqueConstraint, Text
 from sqlalchemy.sql import func
 from app.db.base import Base
 
@@ -106,3 +107,14 @@ class ForecastError(Base):
     forecast_time = Column(DateTime(timezone=True), nullable=False)
 
     evaluated_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id         = Column(Integer, primary_key=True, index=True)
+    rating     = Column(Integer, nullable=True)          # 1–5 or null
+    thumbs     = Column(String(4), nullable=True)        # "up" / "down"
+    category   = Column(String(32), nullable=True)       # "ui" / "accuracy" / "suggestion"
+    message    = Column(Text, nullable=True)
+    user_agent = Column(String(256), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
