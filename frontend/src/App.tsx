@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
-import Map from './pages/Map';
+import Dashboard from './pages/Dashboard';
+import Docs from './pages/Docs';
 import { LangProvider, useLang } from './i18n/LangContext';
 import FeedbackWidget from './components/FeedbackWidget';
 
@@ -19,7 +20,6 @@ function Layout() {
 
   return (
     <div className="app-shell">
-
       <header className="app-header">
         <div className="header-inner">
           <div className="brand">
@@ -28,7 +28,8 @@ function Layout() {
           </div>
           <nav className="header-nav">
             <NavLink to="/">{t.nav.home}</NavLink>
-            <NavLink to="/map">{t.nav.map}</NavLink>
+            <NavLink to="/dashboard">{t.nav.dashboard}</NavLink>
+            <NavLink to="/docs">{t.nav.docs}</NavLink>
           </nav>
           <div className="lang-switcher">
             <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'lang-btn--active' : ''}`}>EN</button>
@@ -41,12 +42,16 @@ function Layout() {
       <main className="app-main">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/map" element={<Map />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/docs" element={<Docs />} />
         </Routes>
       </main>
 
       <footer className="app-footer">
         <div className="footer-inner">
+          <div className="footer-emergency">
+              🚨 {t.footer.emergency}
+          </div>
           <div className="footer-meta">
             <span>{t.footer.demo_note}</span>
             <span className="footer-dot">·</span>
@@ -57,7 +62,6 @@ function Layout() {
           <div className="footer-tagline">{t.footer.tagline}</div>
         </div>
       </footer>
-      {/* Floating feedback button — always visible */}
       <FeedbackWidget variant="floating" />
     </div>
   );

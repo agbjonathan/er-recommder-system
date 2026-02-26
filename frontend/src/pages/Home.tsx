@@ -118,15 +118,16 @@ export default function Home() {
       {/* Inline context banner — permanent, above search */}
       <div className="context-banner">
         <div className="context-banner-top">
-          <span className="context-banner-icon">💡</span>
+          <span className="context-banner-icon">ℹ️ </span>
           <p className="context-banner-title">{t.home.context_title}</p>
         </div>
-        <p className="context-banner-body">{t.home.context_body}</p>
+        <p className="context-banner-body">{t.home.context_body_1}</p>
         <div className="context-banner-tags">
           {(t.home.context_examples as string[]).map((ex, i) => (
             <span key={i} className="context-tag">{ex}</span>
           ))}
         </div>
+        <p className="context-banner-body">{t.home.context_body_2}</p>
         <p className="context-banner-note">{t.home.context_note}</p>
       </div>
 
