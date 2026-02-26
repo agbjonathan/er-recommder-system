@@ -162,20 +162,6 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
-
-          {/* Hospital filter */}
-          <select
-            className="hospital-select"
-            value={selectedHospital}
-            onChange={e =>
-              setSelectedHospital(e.target.value === 'all' ? 'all' : Number(e.target.value))
-            }
-          >
-            <option value="all">{t.dashboard.all_hospitals}</option>
-            {hospitalStats.map(h => (
-              <option key={h.hospital_id} value={h.hospital_id}>{h.name}</option>
-            ))}
-          </select>
         </div>
       </div>
 
@@ -310,9 +296,24 @@ export default function Dashboard() {
           {/* ── PRESSURE ── */}
           {activeTab === 'pressure' && (
             <div className="charts-grid">
+              <div className="chart-card chart-card--span2 pressure-tab-controls">
+              <label className="search-label">{t.dashboard.all_hospitals}</label>
+              <select
+                className="hospital-select"
+                value={selectedHospital}
+                onChange={e =>
+                  setSelectedHospital(e.target.value === 'all' ? 'all' : Number(e.target.value))
+              }
+            >
+                <option value="all">{t.dashboard.all_hospitals}</option>
+                {hospitalStats.map(h => (
+                <option key={h.hospital_id} value={h.hospital_id}>{h.name}</option>
+                ))}
+              </select>
+            </div>
               <ChartCard span2>
                 <SectionLabel>
-                  {selectedHospital === 'all' ? t.dashboard.chart_global_series : `${hospitalStats.find(h => h.hospital_id === selectedHospital)?.name ?? ''} · `}
+                  {selectedHospital === 'all' ? t.dashboard.chart_global_series : `${hospitalStats.find(h => h.hospital_id === selectedHospital)?.name ?? ''} · ${t.dashboard.chart_pressure_horizon.replace('{h}', String(horizon))}`}
                   {t.dashboard.chart_pressure_horizon.replace('{h}', String(horizon))}
                 </SectionLabel>
                 <ResponsiveContainer width="100%" height={280}>

@@ -1598,3 +1598,19 @@ body {
   color: #fca5a5;
   letter-spacing: .01em;
 }
+.pressure-tab-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .85rem 1.4rem;
+}
+
+.pressure-tab-controls .search-label {
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pressure-tab-controls .hospital-select {
+  max-width: 320px;
+}
