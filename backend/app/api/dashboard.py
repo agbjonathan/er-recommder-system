@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from app.db.session import get_db
 from app.db.models import Hospital, Forecast, ForecastError
+from app.ml.risk import pressure_to_risk
 
 TIMEZONE = ZoneInfo("America/Montreal")
 
@@ -129,7 +130,10 @@ def get_dashboard_stats(
             Forecast.risk_level,
             func.count(Forecast.id).label("count"),
         )
-        .filter(Forecast.horizon_hours == horizon_hours)
+        .filter(
+            Forecast.horizon_hours == horizon_hours,
+            Forecast.forecast_time >= since,
+        )
         .group_by(Forecast.risk_level)
         .all()
     )
@@ -143,7 +147,10 @@ def get_dashboard_stats(
             ).label("risk_level"),
             func.count(ForecastError.id).label("count"),
         )
-        .filter(ForecastError.horizon_hours == horizon_hours)
+        .filter(
+            ForecastError.horizon_hours == horizon_hours,
+            ForecastError.evaluated_at >= since, 
+        )
         .group_by("risk_level")
         .all()
     )
@@ -159,33 +166,15 @@ def get_dashboard_stats(
         for row in predicted_risk_counts
     ]
 
-
-    latest_forecast = (
-        db.query(
-            Forecast.hospital_id,
-            func.max(Forecast.forecast_time).label("latest_time"),
-        )
-        .filter(Forecast.horizon_hours == horizon_hours)
-        .group_by(Forecast.hospital_id)
-        .subquery()
-    )
-
-    latest_risk = (
-        db.query(Forecast.hospital_id, Forecast.risk_level)
-        .join(
-            latest_forecast,
-            (Forecast.hospital_id == latest_forecast.c.hospital_id)
-            & (Forecast.forecast_time == latest_forecast.c.latest_time),
-        )
-        .subquery()
-    )
-
     mean_predicted = (
         db.query(
             Forecast.hospital_id,
             func.avg(Forecast.predicted_pressure).label("mean_predicted"),
         )
-        .filter(Forecast.horizon_hours == horizon_hours)
+        .filter(
+        Forecast.horizon_hours == horizon_hours,
+        Forecast.forecast_time >= since,    
+        )
         .group_by(Forecast.hospital_id)
         .subquery()
     )
@@ -195,7 +184,10 @@ def get_dashboard_stats(
             ForecastError.hospital_id,
             func.avg(ForecastError.observed_pressure).label("mean_observed"),
         )
-        .filter(ForecastError.horizon_hours == horizon_hours)
+        .filter(
+        ForecastError.horizon_hours == horizon_hours,
+        ForecastError.evaluated_at >= since,  
+        )
         .group_by(ForecastError.hospital_id)
         .subquery()
     )
@@ -206,11 +198,9 @@ def get_dashboard_stats(
             Hospital.name,
             mean_predicted.c.mean_predicted,
             mean_observed.c.mean_observed,
-            latest_risk.c.risk_level,
         )
         .join(mean_predicted, Hospital.id == mean_predicted.c.hospital_id)
         .outerjoin(mean_observed, Hospital.id == mean_observed.c.hospital_id)
-        .join(latest_risk, Hospital.id == latest_risk.c.hospital_id)
         .filter(Hospital.is_active == True)
         .order_by(mean_predicted.c.mean_predicted.desc())
         .all()
@@ -227,7 +217,7 @@ def get_dashboard_stats(
             "name": row.name,
             "mean_predicted": round(row.mean_predicted, 4),
             "mean_observed": round(row.mean_observed, 4) if row.mean_observed else None,
-            "risk_level": row.risk_level,
+            "risk_level": pressure_to_risk(row.mean_predicted),
         })
 
     return {
