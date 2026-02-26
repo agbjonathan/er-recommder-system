@@ -66,7 +66,7 @@ export const translations = {
     },
     dashboard: {
       title:            'Forecasting Dashboard',
-      subtitle:         'Predicted vs observed pressure · Québec region',
+      subtitle:         'Predicted vs observed pressure · Last 24h rolling window ·  Québec region',
       loading:          'Loading data…',
       error_load:       'Failed to load dashboard data. Please try again.',
       all_hospitals:    'All hospitals',
@@ -246,7 +246,7 @@ export const translations = {
     },
     dashboard: {
       title:            'Tableau de bord prévisionnel',
-      subtitle:         'Pression prévue vs observée · Région du Québec',
+      subtitle:         'Pression prévue vs observée · Fenêtre de 24h · Région du Québec',
       loading:          'Chargement des données…',
       error_load:       'Échec du chargement. Veuillez réessayer.',
       all_hospitals:    'Tous les hôpitaux',

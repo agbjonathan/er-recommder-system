@@ -987,6 +987,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  align-items: stretch;
 }
 .chart-card {
   background: var(--surface);
@@ -1613,4 +1614,61 @@ body {
 
 .pressure-tab-controls .hospital-select {
   max-width: 320px;
+}
+.hospital-bar-wrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.hospital-bar-wrapper .chart-card {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  max-height: 460px;
+}
+
+.hospital-index-list {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.hospital-index-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hospital-index-row {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  padding: .25rem .1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: .75rem;
+}
+
+.hospital-index-row:last-child { border-bottom: none; }
+
+.hospital-index-num {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  color: var(--teal);
+  min-width: 22px;
+  font-size: .72rem;
+}
+
+.hospital-index-name {
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.chart-card {
+  height: 100%;
 }
