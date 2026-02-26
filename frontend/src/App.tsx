@@ -52,6 +52,21 @@ function Layout() {
           <div className="footer-emergency">
               🚨 {t.footer.emergency}
           </div>
+          <p className="docs-p">
+                ER occupancy data is sourced from{' '}
+                <a href="https://www.donneesquebec.ca" target="_blank" rel="noopener noreferrer" className="footer-link">
+                  Données Québec ↗
+                </a>
+                , the Québec open data portal, under data produced by the{' '}
+                <a href="https://www.msss.gouv.qc.ca" target="_blank" rel="noopener noreferrer" className="footer-link">
+                  Ministère de la Santé et des Services sociaux (MSSS)
+                </a>
+                . Snapshots are published hourly and cover all active Québec emergency rooms.
+                For a human-readable view of the same data, visit{' '}
+                <a href="https://www.erinfo.ca" target="_blank" rel="noopener noreferrer" className="footer-link">
+                  erinfo.ca ↗
+                </a>.
+            </p>
           <div className="footer-meta">
             <span>{t.footer.demo_note}</span>
             <span className="footer-dot">·</span>

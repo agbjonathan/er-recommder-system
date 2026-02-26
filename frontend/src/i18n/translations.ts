@@ -2,9 +2,6 @@ export type Lang = 'en' | 'fr';
 
 export const translations = {
   en: {
-    banner: {
-      text: "",
-    },
     nav: {
       home:      'Home',
       dashboard: 'Dashboard',
@@ -175,16 +172,15 @@ export const translations = {
       changelog_title: 'Changelog',
     },
     footer: {
-      demo_note: 'Demo portfolio project.',
+      demo_note: 'Portfolio project.',
       tagline:   'Built to showcase full-stack ML + React development.',
       emergency: 'In an emergency, always call 911.',
+      reference_source : 'Er occupancy data is sourced from',
+      referal: '. Snapshots are published hourly and cover all active Québec emergency rooms. For a human-readable view of the same data, visit',
     },
   },
 
   fr: {
-    banner: {
-      text: "PoC Technique · Modèle prédictif à 83% de précision · Non destiné au triage clinique. En cas d'urgence, contactez immédiatement les services d'urgence.",
-    },
     nav: {
       home:      'Accueil',
       dashboard: 'Dashboard',
@@ -343,9 +339,11 @@ export const translations = {
       changelog_title: 'Journal des modifications',
     },
     footer: {
-      demo_note: 'Projet de portfolio de démonstration.',
+      demo_note: 'Projet de portfolio.',
       tagline:   'Conçu pour démontrer le développement full-stack ML + React.',
       emergency: "En cas d'urgence, appelez toujours le 911.",
+      reference_source : "Les données d'occupation des urgences proviennent de",
+      referal: ". Les snapshots sont publiés toutes les heures et couvrent toutes les urgences actives du Québec. Pour plus d'informations sur ces données, visitez",
     },
   },
 };
