@@ -19,20 +19,39 @@ async def get_recommendations(
     longitude: float = Query(..., description="User's longitude"),
     max_distance: Optional[float] = Query(10.0, description="Maximum distance in km"),
     limit: int = Query(5, description="Maximum number of recommendations to return"),
-    db : Session = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     """
-    Get ER facility recommendations based on location and criteria.
+    Recommend nearby ER facilities based on predicted congestion and distance.
     
     Args:
-        latitude: User's latitude coordinate
-        longitude: User's longitude coordinate
-        max_distance: Maximum distance to search for facilities
-        limit: maximum number of recommendations to return
-        db: Database session dependency
+        latitude (float): User's current latitude.
+        longitude (float): User's current longitude.
+        max_distance (float, optional): Max distance in km to consider. Defaults to 10 km.
+        limit (int, optional): Max number of recommendations to return. Defaults to 5.
     Returns:
-        dict: List of recommended ER facilities and user location
+        dict: {
+            "results": [
+                {
+                    "hospital_id": int,
+                    "name": str,
+                    "hospital_latitude": float,
+                    "hospital_longitude": float,
+                    "distance_km": float,
+                    "predicted_pressure": float or None,
+                    "risk_level": str or None,
+                    "forecast_time": datetime or None,
+                },
+                ...
+            ],
+            "user_location": {
+                "latitude": float,
+                "longitude": float
+            }
+        }
+
     """
+
     now = get_current_time()
 
     hospitals = (
@@ -44,35 +63,54 @@ async def get_recommendations(
         )
         .all()
     )
-    
+
     candidates = []
 
     for h in hospitals:
         distance = haversine_distance(latitude, longitude, h.latitude, h.longitude)
-        if distance <= max_distance:
-            forecast = (
-                db.query(Forecast)
-                .filter(
-                    Forecast.hospital_id == h.id,
-                    Forecast.forecast_time >= now,
-                ).order_by(Forecast.forecast_time.asc()).first()
+        if distance > max_distance:
+            continue
+
+        forecast = (
+            db.query(Forecast)
+            .filter(
+                Forecast.hospital_id == h.id,
+                Forecast.forecast_time >= now,
             )
+            .order_by(Forecast.forecast_time.asc())  # nearest future forecast
+            .first()
+        )
 
-            candidates.append({
-                "hospital_id": h.id,
-                "name": h.name,
-                "hospital_latitude": h.latitude,
-                "hospital_longitude": h.longitude,
-                "distance_km": round(distance, 2),
-                "predicted_pressure": forecast.predicted_pressure if forecast else None,
-                "risk_level": forecast.risk_level if forecast else None,
-                "forecast_time": forecast.forecast_time if forecast else None,
-            })
+        predicted_pressure = forecast.predicted_pressure if forecast else None
 
-    candidates.sort(
-        key=lambda x: (x["predicted_pressure"] if x["predicted_pressure"] is not None else float('inf'), 
-                       x["distance_km"]))
-    
-    return { "results": candidates[:limit] ,
-            "user_location": {"latitude": latitude, "longitude": longitude}
-            }
+        # Composite score: 60% congestion, 40% distance (normalized)
+        # Hospitals with no forecast sort last
+        if predicted_pressure is not None:
+            score = predicted_pressure * 0.6 + (distance / max_distance) * 0.4
+        else:
+            score = float('inf')
+
+        candidates.append({
+            "hospital_id": h.id,
+            "name": h.name,
+            "hospital_latitude": h.latitude,
+            "hospital_longitude": h.longitude,
+            "distance_km": round(distance, 2),
+            "predicted_pressure": predicted_pressure,
+            "risk_level": forecast.risk_level if forecast else None,
+            "forecast_time": forecast.forecast_time if forecast else None,
+            "_score": score,
+        })
+
+    candidates.sort(key=lambda x: x["_score"])
+
+    # Strip internal score before returning
+    results = [
+        {k: v for k, v in c.items() if k != "_score"}
+        for c in candidates[:limit]
+    ]
+
+    return {
+        "results": results,
+        "user_location": {"latitude": latitude, "longitude": longitude},
+    }

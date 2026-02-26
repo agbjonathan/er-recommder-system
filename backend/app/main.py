@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 # Import routers
-from app.api import health, recommend, hospitals, forecasts
+from app.api import health, recommend, hospitals, forecasts, feedback, dashboard
 from app.core import config, logging, security
 from app.scheduler import start_scheduler
 
@@ -33,10 +33,12 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(health.router)
-app.include_router(recommend.router)
-app.include_router(hospitals.router)
-app.include_router(forecasts.router)
+app.include_router(health.router, prefix="/api")
+app.include_router(recommend.router, prefix="/api")
+app.include_router(hospitals.router, prefix="/api")
+app.include_router(forecasts.router, prefix="/api")
+app.include_router(feedback.router, prefix="/api")
+app.include_router(dashboard.router, prefix="/api")
 
 
 @app.get("/")
