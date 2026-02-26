@@ -87,7 +87,7 @@ def get_dashboard_stats(
     # forecasts_24h
     q = (
         db.query(
-            func.date_trunc("hour", Forecast.forecast_time).label("hour"),
+            func.date_trunc("hour", func.timezone("UTC", Forecast.forecast_time)).label("hour"),
             func.avg(Forecast.predicted_pressure).label("avg_predicted"),
         )
         .filter(
@@ -102,7 +102,7 @@ def get_dashboard_stats(
     # errors_24h
     eq = (
         db.query(
-            func.date_trunc("hour", ForecastError.forecast_time).label("hour"),
+            func.date_trunc("hour", func.timezone("UTC", ForecastError.forecast_time)).label("hour"),
             func.avg(ForecastError.observed_pressure).label("avg_observed"),
         )
         .filter(
