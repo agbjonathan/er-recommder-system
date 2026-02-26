@@ -71,6 +71,7 @@ def get_congestion_map(horizon: int = 1, db: Session = Depends(get_db)):
 @router.get("/stats")
 def get_dashboard_stats(
     horizon_hours: int = Query(default=1, ge=1),
+    hospital_id: int | None = Query(default=None),
     db: Session = Depends(get_db),
 ):
     """
@@ -83,7 +84,8 @@ def get_dashboard_stats(
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=24)
 
-    forecasts_24h = (
+    # forecasts_24h
+    q = (
         db.query(
             func.date_trunc("hour", Forecast.forecast_time).label("hour"),
             func.avg(Forecast.predicted_pressure).label("avg_predicted"),
@@ -92,12 +94,13 @@ def get_dashboard_stats(
             Forecast.horizon_hours == horizon_hours,
             Forecast.forecast_time >= since,
         )
-        .group_by("hour")
-        .order_by("hour")
-        .all()
     )
+    if hospital_id:
+        q = q.filter(Forecast.hospital_id == hospital_id)
+    forecasts_24h = q.group_by("hour").order_by("hour").all()
 
-    errors_24h = (
+    # errors_24h
+    eq = (
         db.query(
             func.date_trunc("hour", ForecastError.forecast_time).label("hour"),
             func.avg(ForecastError.observed_pressure).label("avg_observed"),
@@ -106,10 +109,10 @@ def get_dashboard_stats(
             ForecastError.horizon_hours == horizon_hours,
             ForecastError.evaluated_at >= since,
         )
-        .group_by("hour")
-        .order_by("hour")
-        .all()
     )
+    if hospital_id:
+        eq = eq.filter(ForecastError.hospital_id == hospital_id)
+    errors_24h = eq.group_by("hour").order_by("hour").all()
 
     observed_by_hour = {
         row.hour: row.avg_observed for row in errors_24h

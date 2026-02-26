@@ -93,6 +93,17 @@ export default function Dashboard() {
   const globalSeries: PressureSeriesPoint[] = stats?.global_series ?? [];
   const riskComparison = stats?.risk_comparison ?? [];
   const hospitalStats: HospitalPressureStat[] = stats?.hospital_stats ?? [];
+  const [pressureSeries, setPressureSeries] = useState<PressureSeriesPoint[]>([]);
+
+useEffect(() => {
+  if (selectedHospital === 'all') {
+    setPressureSeries(globalSeries);
+    return;
+  }
+  getDashboardStats(horizon, selectedHospital as number)
+    .then(res => setPressureSeries(res.data.global_series))
+    .catch(console.error);
+}, [selectedHospital, horizon, globalSeries]);
 
   const scatterData = hospitalStats.map(h => ({
     name: h.name,
@@ -298,7 +309,7 @@ export default function Dashboard() {
                   }
                 </SectionLabel>
                 <ResponsiveContainer width="100%" height={280}>
-                  <LineChart data={globalSeries}>
+                  <LineChart data={pressureSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
                     <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />

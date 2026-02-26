@@ -98,9 +98,9 @@ export const getCongestionMap = (horizonHours: 1 | 2 | 4 =1) =>
  * New endpoint — see backend section in Docs for implementation.
  * GET /api/dashboard/stats?horizon_hours=1
  */
-export const getDashboardStats = (horizonHours: 1 | 2 | 4 = 1) =>
+export const getDashboardStats = (horizonHours: 1 | 2 | 4 = 1, hospitalId?: number) =>
   api.get<DashboardStatsResponse>('/dashboard/stats', {
-    params: { horizon_hours: horizonHours },
+    params: { horizon_hours: horizonHours, ...(hospitalId ? { hospital_id: hospitalId } : {}) },
   });
 
 export const submitFeedback = (payload: FeedbackPayload) =>
