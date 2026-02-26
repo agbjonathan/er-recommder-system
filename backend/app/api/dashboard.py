@@ -2,9 +2,12 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 
 from app.db.session import get_db
 from app.db.models import Hospital, Forecast, ForecastError
+
+TIMEZONE = ZoneInfo("America/Montreal")
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
@@ -100,7 +103,7 @@ def get_dashboard_stats(
         )
         .filter(
             ForecastError.horizon_hours == horizon_hours,
-            ForecastError.forecast_time >= since,
+            ForecastError.evaluated_at >= since,
         )
         .group_by("hour")
         .order_by("hour")
@@ -113,7 +116,7 @@ def get_dashboard_stats(
 
     global_series = [
         {
-            "label": row.hour.strftime("%H:%M"),
+            "label": row.hour.astimezone(TIMEZONE).strftime("%H:%M"),
             "predicted": round(row.avg_predicted, 4),
             "observed": round(observed_by_hour[row.hour], 4)
             if row.hour in observed_by_hour else None,
@@ -213,16 +216,19 @@ def get_dashboard_stats(
         .all()
     )
 
-    hospital_stats = [
-        {
+    seen = set()
+    hospital_stats = []
+    for row in rows:
+        if row.id in seen:
+            continue
+        seen.add(row.id)
+        hospital_stats.append({
             "hospital_id": row.id,
             "name": row.name,
             "mean_predicted": round(row.mean_predicted, 4),
             "mean_observed": round(row.mean_observed, 4) if row.mean_observed else None,
             "risk_level": row.risk_level,
-        }
-        for row in rows
-    ]
+        })
 
     return {
         "global_series": global_series,
