@@ -49,7 +49,7 @@ def train_and_forecast(db: Session, horizon_hours: int = 1):
             forecast_value -= bias
 
             risk_level = pressure_to_risk(forecast_value)
-            last_time = hospital_df["true_latest_snapshot_time"].iloc[0]
+            last_time = hospital_df["true_latest_snapshot_time"].iloc[-1]
 
             now = get_current_time()
             if last_time.tzinfo is None:
