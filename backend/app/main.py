@@ -6,7 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 # Import routers
-from app.api import health, recommend, hospitals
+from app.api import health, recommend, hospitals, forecasts, feedback
+from app.core import config, logging, security
+from app.scheduler import start_scheduler
+
+logging.setup_logging()
 
 app = FastAPI(
     title="ER Recommender System API",
@@ -14,21 +18,26 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Security headers
+app.add_middleware(security.SecurityHeadersMiddleware)
+
 # Configure CORS - use environment variable for allowed origins
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+# allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],  # In production, specify allowed origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Include routers
-app.include_router(health.router)
-app.include_router(recommend.router)
-app.include_router(hospitals.router)
+app.include_router(health.router, prefix="/api")
+app.include_router(recommend.router, prefix="/api")
+app.include_router(hospitals.router, prefix="/api")
+app.include_router(forecasts.router, prefix="/api")
+app.include_router(feedback.router, prefix="/api")
 
 
 @app.get("/")
@@ -40,7 +49,12 @@ async def root():
         "status": "running"
     }
 
+# Start the scheduler for periodic tasks
+@app.on_event("startup")
+def startup_event():
+    start_scheduler()
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8000)

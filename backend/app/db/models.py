@@ -1,9 +1,10 @@
 """
 Database models for the ER Recommender System.
 """
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean
+
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, UniqueConstraint, Text
 from sqlalchemy.sql import func
-from app.db.session import Base
+from app.db.base import Base
 
 
 class Hospital(Base):
@@ -11,39 +12,109 @@ class Hospital(Base):
     
     __tablename__ = "hospitals"
     
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
+    establishment = Column(String)
     name = Column(String, nullable=False)
     region = Column(String, index=True)
-    address = Column(String)
+    permit_id = Column(String, unique=True, index=True, nullable=False)
+
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     phone = Column(String)
+
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
-class WaitTime(Base):
-    """Wait time data for ER facilities."""
+class ERSnapshot(Base):
+    __tablename__ = "er_snapshots"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "hospital_id",
+            "snapshot_time",
+            name="uq_er_snapshot_hospital_time"
+        ),
+    )
+
+    id = Column(Integer, primary_key=True)
+    hospital_id = Column(
+        Integer,
+        ForeignKey("hospitals.id"),
+        index=True,
+        nullable=False
+    )
+
+    functional_stretchers = Column(Integer, nullable=False)
+    occupied_stretchers = Column(Integer, nullable=False)
+
+    patients_total = Column(Integer, nullable=False)
+    patients_waiting_mc = Column(Integer, nullable=False)
+
+    patients_over_24h = Column(Integer, nullable=False)
+    patients_over_48h = Column(Integer, nullable=False)
+
+    avg_stay_stretcher = Column(Float)      
+    avg_stay_ambulatory = Column(Float)     
+
+    snapshot_time = Column(DateTime(timezone=True), nullable=False)
+    updated_at = Column(DateTime(timezone=True))
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    __tablename__ = "wait_times"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    hospital_id = Column(Integer, index=True)
-    wait_time_minutes = Column(Integer)
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
-    source = Column(String)  # data source identifier
+
 
 
 class Forecast(Base):
-    """Forecasted wait times and occupancy predictions."""
-    
     __tablename__ = "forecasts"
-    
-    id = Column(Integer, primary_key=True, index=True)
+
+    __table_args__ = (
+        UniqueConstraint("hospital_id", "forecast_time", "horizon_hours", name="uq_forecast_unique"),
+    )
+
+    id = Column(Integer, primary_key=True)
     hospital_id = Column(Integer, index=True)
+
+    horizon_hours = Column(Integer, nullable=False)  # 1, 3, 6
+    predicted_pressure = Column(Float, nullable=False)
+
+    lower_bound = Column(Float)
+    upper_bound = Column(Float)
+
+    risk_level = Column(String, nullable=False)
+
+    evaluated = Column(Boolean, default=False)
+
     forecast_time = Column(DateTime(timezone=True), nullable=False)
-    predicted_wait_minutes = Column(Float)
-    confidence_interval_lower = Column(Float)
-    confidence_interval_upper = Column(Float)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+
+class ForecastError(Base):
+    __tablename__ = "forecast_errors"
+
+    id = Column(Integer, primary_key=True)
+    forecast_id = Column(Integer, index=True)
+    hospital_id = Column(Integer, index=True)
+
+    observed_pressure = Column(Float, nullable=False)
+    predicted_pressure = Column(Float, nullable=False)
+
+    absolute_error = Column(Float, nullable=False)
+    squared_error = Column(Float, nullable=False)
+
+    horizon_hours = Column(Integer, nullable=False)
+    forecast_time = Column(DateTime(timezone=True), nullable=False)
+
+    evaluated_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id         = Column(Integer, primary_key=True, index=True)
+    rating     = Column(Integer, nullable=True)          # 1–5 or null
+    thumbs     = Column(String(4), nullable=True)        # "up" / "down"
+    category   = Column(String(32), nullable=True)       # "ui" / "accuracy" / "suggestion"
+    message    = Column(Text, nullable=True)
+    user_agent = Column(String(256), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

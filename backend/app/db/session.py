@@ -2,21 +2,22 @@
 Database session management.
 """
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import  sessionmaker
 from app.core.config import settings
+from app.db.base import Base
 
 # Create database engine
 engine = create_engine(
     settings.database_url,
     pool_pre_ping=True,
-    echo=settings.debug
+    # echo=settings.debug
 )
 
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base class for models
-Base = declarative_base()
+# # Base class for models
+# Base = declarative_base()
 
 
 def get_db():
