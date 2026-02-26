@@ -89,8 +89,10 @@ export const getRecommendations = (lat: number, lng: number, maxDistance = 10) =
     params: { latitude: lat, longitude: lng, max_distance: maxDistance },
   });
 
-export const getCongestionMap = () =>
-  api.get<CongestionMapResponse>('/dashboard/congestion/map');
+export const getCongestionMap = (horizonHours: 1 | 2 | 4 =1) =>
+  api.get<CongestionMapResponse>('/dashboard/congestion/map', {
+    params: { horizon_hours: horizonHours },
+  });
 
 /**
  * New endpoint — see backend section in Docs for implementation.

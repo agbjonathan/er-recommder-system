@@ -102,7 +102,7 @@ export default function Dashboard() {
 
   // Load map data once
   useEffect(() => {
-    getCongestionMap()
+    getCongestionMap(horizon)
       .then(res => setMapFeatures(res.data.features))
       .catch(console.error)
       .finally(() => setMapLoading(false));
