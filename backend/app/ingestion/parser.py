@@ -1,5 +1,6 @@
 import pandas as pd
 import pytz
+from datetime import datetime, timezone
 
 MONTREAL_TZ = pytz.timezone("America/Montreal")
 
@@ -25,6 +26,10 @@ def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         .dt.tz_localize("America/Montreal", ambiguous="infer", nonexistent="shift_forward")
         .dt.tz_convert("UTC")
     )
+
+    now_utc = pd.Timestamp.now(tz="UTC")
+    df["snapshot_time"] = df["snapshot_time"].clip(upper=now_utc)
+
     df["updated_at"] = (
         pd.to_datetime(df["Mise_a_jour"])
         .dt.tz_localize("America/Montreal", ambiguous="infer", nonexistent="shift_forward")
