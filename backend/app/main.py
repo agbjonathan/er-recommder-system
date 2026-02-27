@@ -20,6 +20,8 @@ app = FastAPI(
 # Security headers
 app.add_middleware(security.SecurityHeadersMiddleware)
 
+#lil push
+
 # Configure CORS - use environment variable for allowed origins
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
