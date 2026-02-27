@@ -10,6 +10,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers['X-Frame-Options'] = 'DENY'
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=()"
+        response.headers["Permissions-Policy"] = "geolocation=(self), microphone=()"
 
         return response
