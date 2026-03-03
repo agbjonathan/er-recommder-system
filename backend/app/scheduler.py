@@ -8,21 +8,21 @@ def start() -> BackgroundScheduler:
     scheduler.add_job(
         ingestion.run,
         trigger="cron",
-        minute="*",        # matches Azure: "0 * * * *"
+        minute="*",
         id="ingestion",
         replace_existing=True,
     )
     scheduler.add_job(
         forecasting.run,
         trigger="cron",
-        minute="5",        # matches Azure: "5 * * * *"
+        minute="5",
         id="forecasting",
         replace_existing=True,
     )
     scheduler.add_job(
         evaluate.run,
         trigger="cron",
-        minute="10",        # matches Azure: "10 * * * *"
+        minute="10",
         id="evaluation",
         replace_existing=True,
     )
