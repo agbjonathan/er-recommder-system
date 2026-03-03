@@ -8,7 +8,7 @@ def start() -> BackgroundScheduler:
     scheduler.add_job(
         ingestion.run,
         trigger="cron",
-        minute="*",
+        minute="0",
         id="ingestion",
         replace_existing=True,
     )
