@@ -10,6 +10,7 @@ def start() -> BackgroundScheduler:
         trigger="cron",
         minute="0",
         id="ingestion",
+        name="Data Ingestion Job",
         replace_existing=True,
     )
     scheduler.add_job(
@@ -17,6 +18,7 @@ def start() -> BackgroundScheduler:
         trigger="cron",
         minute="5",
         id="forecasting",
+        name="Forecasting Job",
         replace_existing=True,
     )
     scheduler.add_job(
@@ -24,6 +26,7 @@ def start() -> BackgroundScheduler:
         trigger="cron",
         minute="10",
         id="evaluation",
+        name="Evaluation Job",
         replace_existing=True,
     )
     scheduler.start()
