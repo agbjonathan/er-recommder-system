@@ -89,38 +89,6 @@ class Forecast(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
-
-class ForecastError(Base):
-    __tablename__ = "forecast_errors"
-
-    id = Column(Integer, primary_key=True)
-    forecast_id = Column(Integer, index=True)
-    hospital_id = Column(Integer, index=True)
-
-    observed_pressure = Column(Float, nullable=False)
-    predicted_pressure = Column(Float, nullable=False)
-
-    absolute_error = Column(Float, nullable=False)
-    squared_error = Column(Float, nullable=False)
-
-    horizon_hours = Column(Integer, nullable=False)
-    forecast_time = Column(DateTime(timezone=True), nullable=False)
-
-    evaluated_at = Column(DateTime(timezone=True), server_default=func.now())
-
-class Feedback(Base):
-    __tablename__ = "feedback"
-
-    id         = Column(Integer, primary_key=True, index=True)
-    rating     = Column(Integer, nullable=True)          # 1–5 or null
-    thumbs     = Column(String(4), nullable=True)        # "up" / "down"
-    category   = Column(String(32), nullable=True)       # "ui" / "accuracy" / "suggestion"
-    message    = Column(Text, nullable=True)
-    user_agent = Column(String(256), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-
-
 class ForecastError(Base):
     __tablename__ = "forecast_errors"
 
