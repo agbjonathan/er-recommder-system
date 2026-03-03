@@ -52,6 +52,20 @@ function Layout() {
           <div className="footer-emergency">
               🚨 {t.footer.emergency}
           </div>
+          <p className="docs-p">
+                {t.footer.reference_source}{' '}
+                <a href="https://www.donneesquebec.ca" target="_blank" rel="noopener noreferrer" className="footer-link">
+                  Données Québec ↗
+                </a>
+                {t.footer.inter_ref}{' '}
+                <a href="https://www.msss.gouv.qc.ca" target="_blank" rel="noopener noreferrer" className="footer-link">
+                  Ministère de la Santé et des Services sociaux (MSSS)
+                </a>
+                {t.footer.referal}{' '}
+                <a href="https://www.erinfo.ca" target="_blank" rel="noopener noreferrer" className="footer-link">
+                  erinfo.ca ↗
+                </a>.
+            </p>
           <div className="footer-meta">
             <span>{t.footer.demo_note}</span>
             <span className="footer-dot">·</span>

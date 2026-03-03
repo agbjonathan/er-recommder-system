@@ -2,9 +2,6 @@ export type Lang = 'en' | 'fr';
 
 export const translations = {
   en: {
-    banner: {
-      text: "",
-    },
     nav: {
       home:      'Home',
       dashboard: 'Dashboard',
@@ -66,7 +63,7 @@ export const translations = {
     },
     dashboard: {
       title:            'Forecasting Dashboard',
-      subtitle:         'Predicted vs observed pressure · Québec region',
+      subtitle:         'Predicted vs observed pressure · Last 24h rolling window ·  Québec region',
       loading:          'Loading data…',
       error_load:       'Failed to load dashboard data. Please try again.',
       all_hospitals:    'All hospitals',
@@ -175,16 +172,16 @@ export const translations = {
       changelog_title: 'Changelog',
     },
     footer: {
-      demo_note: 'Demo portfolio project.',
+      demo_note: 'Portfolio project.',
       tagline:   'Built to showcase full-stack ML + React development.',
       emergency: 'In an emergency, always call 911.',
+      reference_source : 'Er occupancy data is sourced from',
+      inter_ref: ', the Québec open data portal, under data produced by the',
+      referal: '. Snapshots are published hourly and cover all active Québec emergency rooms. For a human-readable view of the same data, visit',
     },
   },
 
   fr: {
-    banner: {
-      text: "PoC Technique · Modèle prédictif à 83% de précision · Non destiné au triage clinique. En cas d'urgence, contactez immédiatement les services d'urgence.",
-    },
     nav: {
       home:      'Accueil',
       dashboard: 'Dashboard',
@@ -246,7 +243,7 @@ export const translations = {
     },
     dashboard: {
       title:            'Tableau de bord prévisionnel',
-      subtitle:         'Pression prévue vs observée · Région du Québec',
+      subtitle:         'Pression prévue vs observée · Fenêtre de 24h · Région du Québec',
       loading:          'Chargement des données…',
       error_load:       'Échec du chargement. Veuillez réessayer.',
       all_hospitals:    'Tous les hôpitaux',
@@ -343,9 +340,12 @@ export const translations = {
       changelog_title: 'Journal des modifications',
     },
     footer: {
-      demo_note: 'Projet de portfolio de démonstration.',
+      demo_note: 'Projet de portfolio.',
       tagline:   'Conçu pour démontrer le développement full-stack ML + React.',
       emergency: "En cas d'urgence, appelez toujours le 911.",
+      reference_source : "Les données d'occupation des urgences proviennent de",
+      inter_ref: ", le portail de données publiques du Québec, sous les données produites par le",
+      referal: ". Les snapshots sont publiés toutes les heures et couvrent toutes les urgences actives du Québec. Pour plus d'informations sur ces données, visitez",
     },
   },
 };

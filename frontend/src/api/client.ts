@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api' });
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL ?? '/api' });
 
 export interface Hospital {
   hospital_id: number;
@@ -89,16 +89,18 @@ export const getRecommendations = (lat: number, lng: number, maxDistance = 10) =
     params: { latitude: lat, longitude: lng, max_distance: maxDistance },
   });
 
-export const getCongestionMap = () =>
-  api.get<CongestionMapResponse>('/dashboard/congestion/map');
+export const getCongestionMap = (horizonHours: 1 | 2 | 4 =1) =>
+  api.get<CongestionMapResponse>('/dashboard/congestion/map', {
+    params: { horizon_hours: horizonHours },
+  });
 
 /**
  * New endpoint — see backend section in Docs for implementation.
  * GET /api/dashboard/stats?horizon_hours=1
  */
-export const getDashboardStats = (horizonHours: 1 | 2 | 4 = 1) =>
+export const getDashboardStats = (horizonHours: 1 | 2 | 4 = 1, hospitalId?: number) =>
   api.get<DashboardStatsResponse>('/dashboard/stats', {
-    params: { horizon_hours: horizonHours },
+    params: { horizon_hours: horizonHours, ...(hospitalId ? { hospital_id: hospitalId } : {}) },
   });
 
 export const submitFeedback = (payload: FeedbackPayload) =>

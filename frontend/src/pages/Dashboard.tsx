@@ -13,28 +13,17 @@ import type {
 import { useLang } from '../i18n/LangContext';
 import 'leaflet/dist/leaflet.css';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type Tab = 'overview' | 'pressure' | 'risk' | 'map';
 type Horizon = 1 | 2 | 4;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const RISK_COLORS: Record<string, string> = {
-  LOW: '#22c55e',
-  MEDIUM: '#f59e0b',
-  HIGH: '#ef4444',
-  low: '#22c55e',
-  medium: '#f59e0b',
-  high: '#ef4444',
+  LOW: '#22c55e', MEDIUM: '#f59e0b', HIGH: '#ef4444',
+  low: '#22c55e', medium: '#f59e0b', high: '#ef4444',
 };
 
 const riskColor = (r: string | null) => RISK_COLORS[r ?? ''] ?? '#94a3b8';
+const pressureColor = (v: number) =>  v >= 0.7 ? '#ef4444' : v >= 0.4 ? '#f59e0b' : '#22c55e';
 
-const pressureColor = (v: number) =>
-  v >= 1.0 ? '#ef4444' : v >= 0.7 ? '#f59e0b' : '#22c55e';
-
-// Custom tooltip consistent with the app's design system
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -49,8 +38,6 @@ function ChartTooltip({ active, payload, label }: any) {
     </div>
   );
 }
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return <p className="chart-section-label">{children}</p>;
@@ -74,8 +61,6 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub?: st
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-
 export default function Dashboard() {
   const { t } = useLang();
 
@@ -83,14 +68,12 @@ export default function Dashboard() {
   const [horizon, setHorizon] = useState<Horizon>(1);
   const [selectedHospital, setSelectedHospital] = useState<number | 'all'>('all');
 
-  // Data states
   const [stats, setStats] = useState<DashboardStatsResponse | null>(null);
   const [mapFeatures, setMapFeatures] = useState<CongestionFeature[]>([]);
   const [statsLoading, setStatsLoading] = useState(true);
   const [mapLoading, setMapLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load chart stats whenever horizon changes
   useEffect(() => {
     setStatsLoading(true);
     setError(null);
@@ -100,23 +83,27 @@ export default function Dashboard() {
       .finally(() => setStatsLoading(false));
   }, [horizon]);
 
-  // Load map data once
   useEffect(() => {
-    getCongestionMap()
+    getCongestionMap(horizon)
       .then(res => setMapFeatures(res.data.features))
       .catch(console.error)
       .finally(() => setMapLoading(false));
   }, []);
 
-  // Derived chart data
   const globalSeries: PressureSeriesPoint[] = stats?.global_series ?? [];
   const riskComparison = stats?.risk_comparison ?? [];
   const hospitalStats: HospitalPressureStat[] = stats?.hospital_stats ?? [];
+  const [pressureSeries, setPressureSeries] = useState<PressureSeriesPoint[]>([]);
 
-  const filteredSeries =
-    selectedHospital === 'all'
-      ? globalSeries
-      : globalSeries; // per-hospital series would come from a separate API call
+useEffect(() => {
+  if (selectedHospital === 'all') {
+    setPressureSeries(globalSeries);
+    return;
+  }
+  getDashboardStats(horizon, selectedHospital as number)
+    .then(res => setPressureSeries(res.data.global_series))
+    .catch(console.error);
+}, [selectedHospital, horizon, globalSeries]);
 
   const scatterData = hospitalStats.map(h => ({
     name: h.name,
@@ -125,7 +112,6 @@ export default function Dashboard() {
     risk: h.risk_level,
   }));
 
-  // KPIs
   const highRiskCount = hospitalStats.filter(h => h.risk_level === 'HIGH').length;
   const meanPredicted = hospitalStats.length
     ? hospitalStats.reduce((s, h) => s + h.mean_predicted, 0) / hospitalStats.length
@@ -142,15 +128,12 @@ export default function Dashboard() {
   return (
     <div className="dashboard-page">
 
-      {/* ── Page header ───────────────────────────────────────── */}
       <div className="dashboard-header">
         <div>
           <h1 className="dashboard-title">{t.dashboard.title}</h1>
           <p className="dashboard-subtitle">{t.dashboard.subtitle}</p>
         </div>
-
         <div className="dashboard-controls">
-          {/* Horizon selector */}
           <div className="horizon-selector">
             {([1, 2, 4] as Horizon[]).map(h => (
               <button
@@ -162,24 +145,9 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
-
-          {/* Hospital filter */}
-          <select
-            className="hospital-select"
-            value={selectedHospital}
-            onChange={e =>
-              setSelectedHospital(e.target.value === 'all' ? 'all' : Number(e.target.value))
-            }
-          >
-            <option value="all">{t.dashboard.all_hospitals}</option>
-            {hospitalStats.map(h => (
-              <option key={h.hospital_id} value={h.hospital_id}>{h.name}</option>
-            ))}
-          </select>
         </div>
       </div>
 
-      {/* ── KPI strip ─────────────────────────────────────────── */}
       <div className="dashboard-kpis">
         <KpiCard
           label={t.dashboard.kpi_mean_predicted}
@@ -202,7 +170,6 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* ── Tabs ──────────────────────────────────────────────── */}
       <div className="dashboard-tabs">
         {TABS.map(tab => (
           <button
@@ -215,10 +182,8 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* ── Error state ───────────────────────────────────────── */}
       {error && <p className="error-msg" style={{ marginBottom: '1.5rem' }}>{error}</p>}
 
-      {/* ── Loading skeleton ──────────────────────────────────── */}
       {statsLoading && activeTab !== 'map' && (
         <div className="dashboard-loading">
           <div className="spinner" />
@@ -226,7 +191,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── Tab content ───────────────────────────────────────── */}
       {!statsLoading && (
         <div className="dashboard-tab-content">
 
@@ -236,7 +200,7 @@ export default function Dashboard() {
               <ChartCard span2>
                 <SectionLabel>{t.dashboard.chart_global_series}</SectionLabel>
                 <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={filteredSeries}>
+                  <LineChart data={globalSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
                     <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} domain={[0, 'auto']} />
@@ -244,79 +208,108 @@ export default function Dashboard() {
                     <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'DM Sans, sans-serif' }} />
                     <ReferenceLine y={0.7} stroke="#f59e0b" strokeDasharray="4 3" strokeOpacity={0.6} />
                     <ReferenceLine y={1.0} stroke="#ef4444" strokeDasharray="4 3" strokeOpacity={0.6} />
-                    <Line
-                      type="monotone"
-                      dataKey="predicted"
-                      name={t.dashboard.legend_predicted}
-                      stroke="var(--teal)"
-                      strokeWidth={2.5}
-                      dot={false}
-                      activeDot={{ r: 4 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="observed"
-                      name={t.dashboard.legend_observed}
-                      stroke="var(--navy-mid)"
-                      strokeWidth={2}
-                      strokeDasharray="5 3"
-                      dot={false}
-                      activeDot={{ r: 4 }}
-                    />
+                    <Line type="monotone" dataKey="predicted" name={t.dashboard.legend_predicted} stroke="var(--teal)" strokeWidth={2.5} dot={false} activeDot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="observed" name={t.dashboard.legend_observed} stroke="var(--navy-mid)" strokeWidth={2} strokeDasharray="5 3" dot={false} activeDot={{ r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>
 
-              <ChartCard>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <SectionLabel>{t.dashboard.chart_risk_distribution}</SectionLabel>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={riskComparison} barGap={4}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                    <XAxis dataKey="risk" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
-                    <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'DM Sans, sans-serif' }} />
-                    <Bar dataKey="predicted" name={t.dashboard.legend_predicted} radius={[4, 4, 0, 0]}>
-                      {riskComparison.map(entry => (
-                        <Cell key={entry.risk} fill={riskColor(entry.risk)} />
-                      ))}
-                    </Bar>
-                    <Bar dataKey="observed" name={t.dashboard.legend_observed} fill="var(--border)" stroke="var(--text-muted)" strokeWidth={1} radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
+                <div style={{ flex: 1, minHeight: 220 }}>
+                  <ResponsiveContainer width="100%" height="85%">
+                    <BarChart data={riskComparison} barGap={4}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                      <XAxis dataKey="risk" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
+                      <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
+                      <Tooltip content={<ChartTooltip />} />
+                      <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'DM Sans, sans-serif' }} />
+                      <Bar dataKey="predicted" name={t.dashboard.legend_predicted} radius={[4, 4, 0, 0]}>
+                        {riskComparison.map(entry => (
+                          <Cell key={entry.risk} fill={riskColor(entry.risk)} />
+                        ))}
+                      </Bar>
+                      <Bar dataKey="observed" name={t.dashboard.legend_observed} fill="var(--border)" stroke="var(--text-muted)" strokeWidth={1} radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
 
-              <ChartCard>
-                <SectionLabel>{t.dashboard.chart_hospital_bar}</SectionLabel>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={hospitalStats} layout="vertical" barSize={10}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                    <XAxis type="number" domain={[0, 1.5]} tick={{ fontSize: 10, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
-                    <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 9, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <ReferenceLine x={0.7} stroke="#f59e0b" strokeDasharray="3 3" strokeOpacity={0.7} />
-                    <ReferenceLine x={1.0} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.7} />
-                    <Bar dataKey="mean_predicted" name={t.dashboard.legend_predicted} radius={[0, 4, 4, 0]}>
-                      {hospitalStats.map(h => (
-                        <Cell key={h.hospital_id} fill={pressureColor(h.mean_predicted)} />
+              {/* ── Per-hospital bar + index list ── */}
+              <div className="chart-card" style={{ padding: '1.25rem 1.4rem' }}>
+                <div className="hospital-bar-wrapper">
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p className="chart-section-label" style={{ marginBottom: '.75rem' }}>
+                      {t.dashboard.chart_hospital_bar}
+                    </p>
+                    <div style={{ overflowY: 'auto', maxHeight: '440px' }}>
+                      <ResponsiveContainer width="100%" height={Math.min(hospitalStats.length * 22, 440)}>
+                        <BarChart
+                          data={hospitalStats.map((h, i) => ({ ...h, index: i + 1 }))}
+                          layout="vertical"
+                          barSize={8}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                          <XAxis type="number" domain={[0, 1.5]} tick={{ fontSize: 10, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
+                          <YAxis dataKey="index" type="category" width={28} tick={{ fontSize: 9, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
+                          <Tooltip content={<ChartTooltip />} />
+                          <ReferenceLine x={0.7} stroke="#f59e0b" strokeDasharray="3 3" strokeOpacity={0.7} />
+                          <ReferenceLine x={1.0} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.7} />
+                          <Bar dataKey="mean_predicted" name={t.dashboard.legend_predicted} radius={[0, 4, 4, 0]}>
+                            {hospitalStats.map((h, i) => (
+                              <Cell key={i} fill={pressureColor(h.mean_predicted)} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  <div className="hospital-index-list">
+                    <p className="chart-section-label" style={{ marginBottom: '.75rem' }}>Index</p>
+                    <div className="hospital-index-scroll">
+                      {hospitalStats.map((h, i) => (
+                        <div key={h.hospital_id} className="hospital-index-row">
+                          <span className="hospital-index-num">{i + 1}</span>
+                          <span className="hospital-index-name">{h.name}</span>
+                        </div>
                       ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           {/* ── PRESSURE ── */}
           {activeTab === 'pressure' && (
             <div className="charts-grid">
+              <div className="chart-card chart-card--span2 pressure-tab-controls">
+                <label className="search-label">{t.dashboard.all_hospitals}</label>
+                <select
+                  className="hospital-select"
+                  value={selectedHospital}
+                  onChange={e =>
+                    setSelectedHospital(e.target.value === 'all' ? 'all' : Number(e.target.value))
+                  }
+                >
+                  <option value="all">{t.dashboard.all_hospitals}</option>
+                  {hospitalStats.map(h => (
+                    <option key={h.hospital_id} value={h.hospital_id}>{h.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <ChartCard span2>
+                {/* FIX: single expression, no concatenation */}
                 <SectionLabel>
-                  {selectedHospital === 'all' ? t.dashboard.chart_global_series : `${hospitalStats.find(h => h.hospital_id === selectedHospital)?.name ?? ''} · `}
-                  {t.dashboard.chart_pressure_horizon.replace('{h}', String(horizon))}
+                  {selectedHospital === 'all'
+                    ? t.dashboard.chart_global_series
+                    : `${hospitalStats.find(h => h.hospital_id === selectedHospital)?.name ?? ''} · ${t.dashboard.chart_pressure_horizon.replace('{h}', String(horizon))}`
+                  }
                 </SectionLabel>
                 <ResponsiveContainer width="100%" height={280}>
-                  <LineChart data={filteredSeries}>
+                  <LineChart data={pressureSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
                     <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }} />
@@ -349,7 +342,6 @@ export default function Dashboard() {
                       label={{ value: t.dashboard.legend_predicted, angle: -90, position: 'insideLeft', offset: 10, fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif' }}
                     />
                     <Tooltip content={<ChartTooltip />} cursor={{ strokeDasharray: '3 3' }} />
-                    {/* Perfect calibration line */}
                     <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1.5, y: 1.5 }]} stroke="var(--border)" strokeDasharray="5 3" />
                     <Scatter data={scatterData} name={t.dashboard.chart_scatter}>
                       {scatterData.map((d, i) => (
@@ -395,7 +387,6 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </ChartCard>
 
-              {/* Per-hospital risk cards */}
               {hospitalStats.map(h => (
                 <div key={h.hospital_id} className="hospital-stat-card">
                   <div className="hospital-stat-header">

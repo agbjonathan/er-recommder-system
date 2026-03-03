@@ -1,46 +1,34 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from app.ingestion.main import run_ingestion
-from app.ml.evaluate_forecasts import evaluate_forecasts
-from app.ml.run_forecasting import run_forecasting
-from datetime import datetime, timezone, timedelta
+from app.jobs import ingestion, forecasting, evaluate
+from app.core.logging import logger
 
-scheduler = BackgroundScheduler()
-
-def start_scheduler():
-    scheduler.add_job(
-        run_ingestion,
-        "interval",
-        hours=1,
-        next_run_time=datetime.now(timezone.utc),
-        id="run_ingestion_job",
-        replace_existing=True,
-        max_instances=1,
-        coalesce=True,
-        misfire_grace_time=1800, 
-    )
+def start() -> BackgroundScheduler:
+    scheduler = BackgroundScheduler()
 
     scheduler.add_job(
-        run_forecasting,
-        "interval",
-        hours=1,
-        next_run_time=datetime.now(timezone.utc) + timedelta(minutes=5),
-        id="run_forecasting_job",
+        ingestion.run,
+        trigger="cron",
+        minute="0",
+        id="ingestion",
+        name="Data Ingestion Job",
         replace_existing=True,
-        max_instances=1,
-        coalesce=True,
-        misfire_grace_time=1800, 
     )
-
     scheduler.add_job(
-        evaluate_forecasts,
-        "interval",
-        hours=1,
-        next_run_time=datetime.now(timezone.utc) + timedelta(minutes=10),
-        id="evaluate_forecasts_job",
+        forecasting.run,
+        trigger="cron",
+        minute="5",
+        id="forecasting",
+        name="Forecasting Job",
         replace_existing=True,
-        max_instances=1,
-        coalesce=True,
-        misfire_grace_time=1800,
     )
-
+    scheduler.add_job(
+        evaluate.run,
+        trigger="cron",
+        minute="10",
+        id="evaluation",
+        name="Evaluation Job",
+        replace_existing=True,
+    )
     scheduler.start()
+    logger.info("APScheduler started — running jobs locally")
+    return scheduler
