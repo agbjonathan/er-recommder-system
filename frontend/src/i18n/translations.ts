@@ -13,7 +13,7 @@ export const translations = {
       hero_title_highlight: 'Emergency Room',
       hero_subtitle:        'Real-time congestion forecasts to help you make faster, smarter decisions in critical moments.',
       context_title:        'Read before usage',
-      context_body_1:         'This tool is designed for Level 3 Québec emergencies situations, non-life-threatening but requiring medical attention. You can get to the ER yourself, but triage priority is set by health professionals on-site.',
+      context_body_1:         'This tool is designed for Level 3 Québec emergencies situations, non-life-threatening but requiring medical attention. You can get to the ER yourself(either by taxi or someones can drive you to ER), but triage priority is set by health professionals on-site.',
       context_examples: [
         'Probable fracture', 'Severe but stable pain', 'Deep laceration',
         'High fever (adult)', 'Moderate allergic reaction',
@@ -47,6 +47,7 @@ export const translations = {
       no_results_body: "No ERs were found within the search radius. Try a different address or a more central location.",
       resolved_location_prefix: 'Showing results near :',
       resolved_location_retry: 'Not the right location? Search again ↩',
+      error_address: 'Address not found. Please try a more specific address.',
     },
     feedback: {
       inline_cta:          'Share your feedback',
@@ -177,7 +178,7 @@ export const translations = {
     },
     footer: {
       demo_note: 'Portfolio project.',
-      tagline:   'Built to showcase full-stack ML + React development.',
+      tagline:   'Built to showcase full-stack, ML + Azure development.',
       emergency: 'In an emergency, always call 911.',
       reference_source : 'Er occupancy data is sourced from',
       inter_ref: ', the Québec open data portal, under data produced by the',
@@ -197,7 +198,7 @@ export const translations = {
       hero_title_highlight: 'Urgence Près de Vous',
       hero_subtitle:        'Prévisions de congestion en temps réel pour vous aider à prendre de meilleures décisions dans les moments critiques.',
       context_title:        "Lire avant utilisation",
-      context_body_1:         "Cet outil est conçu pour les situations d'urgences au Québec de niveau 3, non mortelles mais nécessitant une attention médicale. Vous pouvez vous rendre à l'urgence par vos propres moyens, mais la priorité de triage est établie par les professionnels de santé sur place.",
+      context_body_1:         "Cet outil est conçu pour les situations d'urgences au Québec de niveau 3, non mortelles mais nécessitant une attention médicale. Vous pouvez vous rendre à l'urgence par vos propres moyens(soit en taxi, soit quelqu'un peut vous conduire aux urgences), mais la priorité de triage est établie par les professionnels de santé sur place.",
       context_examples: [
         'Fracture probable', 'Douleur intense mais stable', 'Lacération profonde',
         'Fièvre élevée (adulte)', 'Réaction allergique modérée',
@@ -231,6 +232,7 @@ export const translations = {
       no_results_body: "Aucune urgence n'a été trouvée dans le rayon de recherche. Essayez une adresse différente ou un emplacement plus central.",
       resolved_location_prefix: 'Résultats à proximité de :',
       resolved_location_retry: 'Pas le bon endroit ? Recherchez à nouveau ↩',
+      error_address: 'Adresse introuvable. Veuillez essayer une adresse plus précise.',
     },
     feedback: {
       inline_cta:          'Donnez votre avis',
@@ -349,7 +351,7 @@ export const translations = {
     },
     footer: {
       demo_note: 'Projet de portfolio.',
-      tagline:   'Conçu pour démontrer le développement full-stack ML + React.',
+      tagline:   'Conçu pour démontrer le développement full-stack, ML + Azure.',
       emergency: "En cas d'urgence, appelez toujours le 911.",
       reference_source : "Les données d'occupation des urgences proviennent de",
       inter_ref: ", le portail de données publiques du Québec, sous les données produites par le",

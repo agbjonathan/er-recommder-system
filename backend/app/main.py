@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="ER Recommender System API",
     description="API for recommending emergency room facilities based on congestion and proximity",
-    version="1.1.0",
+    version="1.1.1",
     lifespan=lifespan,
 )
 
@@ -39,11 +39,11 @@ app = FastAPI(
 app.add_middleware(security.SecurityHeadersMiddleware)
 
 # Configure CORS - use environment variable for allowed origins
-# allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify allowed origins
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -64,6 +64,6 @@ async def root():
     """Root endpoint."""
     return { 
         "message": "ER Recommender System API",
-        "version": "1.1.0",
+        "version": "1.1.1",
         "status": "running"
     }

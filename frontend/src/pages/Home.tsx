@@ -36,7 +36,7 @@ export default function Home() {
         );
         if (!geoRes.ok) {
           const body = await geoRes.json().catch(() => ({}));
-          setError(body.detail ?? 'Address not found. Please try a more specific address.');
+          setError(body.detail ?? t.home.error_address);
           return;
         }
         const geoData = await geoRes.json();
@@ -211,7 +211,7 @@ export default function Home() {
               <circle cx="12" cy="10" r="3"/>
             </svg>
             <span className="resolved-location-label">
-              {t.home.resolved_location_prefix ?? 'Showing results near:'}{' '}
+              {t.home.resolved_location_prefix}{' '}
               <strong>{resolvedLocation}</strong>
             </span>
           </div>
@@ -220,7 +220,7 @@ export default function Home() {
             className="resolved-location-retry"
             onClick={handleSearchAgain}
           >
-            {t.home.resolved_location_retry ?? 'Not the right location? Search again ↩'}
+            {t.home.resolved_location_retry}
           </button>
         </div>
       )}
@@ -234,10 +234,10 @@ export default function Home() {
               <circle cx="12" cy="10" r="3"/>
             </svg>
             <p className="empty-state-title">
-              {t.home.no_results_title ?? 'No emergency rooms found nearby'}
+              {t.home.no_results_title}
             </p>
             <p className="empty-state-body">
-              {t.home.no_results_body ?? 'No ERs were found within the search radius. Try a different address or a more central location.'}
+              {t.home.no_results_body}
             </p>
           </div>
         </section>
