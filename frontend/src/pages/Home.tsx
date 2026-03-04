@@ -4,6 +4,8 @@ import type { Hospital } from '../api/client';
 import { useLang } from '../i18n/LangContext';
 import FeedbackWidget from '../components/FeedbackWidget';
 
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api';
+
 export default function Home() {
   const { t } = useLang();
   const [address, setAddress] = useState('');
@@ -32,7 +34,7 @@ export default function Home() {
         setResolvedLocation(address);
       } else {
         const geoRes = await fetch(
-          `/api/geocode/forward?q=${encodeURIComponent(address)}`
+          `${API_BASE}/geocode/forward?q=${encodeURIComponent(address)}`
         );
         if (!geoRes.ok) {
           const body = await geoRes.json().catch(() => ({}));
@@ -77,7 +79,7 @@ export default function Home() {
         setCoords({ lat: latitude, lng: longitude });
         try {
           const res = await fetch(
-            `/api/geocode/reverse?lat=${latitude}&lng=${longitude}`
+            `${API_BASE}/geocode/reverse?lat=${latitude}&lng=${longitude}`
           );
           if (res.ok) {
             const data = await res.json();
