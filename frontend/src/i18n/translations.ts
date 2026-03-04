@@ -45,6 +45,8 @@ export const translations = {
       error_geo_unsupported: 'Geolocation is not supported by your browser.',
       no_results_title: "No emergency rooms found nearby",
       no_results_body: "No ERs were found within the search radius. Try a different address or a more central location.",
+      resolved_location_prefix: 'Showing results near :',
+      resolved_location_retry: 'Not the right location? Search again ↩',
     },
     feedback: {
       inline_cta:          'Share your feedback',
@@ -227,6 +229,8 @@ export const translations = {
       error_geo_unsupported: "La géolocalisation n'est pas supportée par votre navigateur.",
       no_results_title: "Aucune urgence trouvée à proximité",
       no_results_body: "Aucune urgence n'a été trouvée dans le rayon de recherche. Essayez une adresse différente ou un emplacement plus central.",
+      resolved_location_prefix: 'Résultats à proximité de :',
+      resolved_location_retry: 'Pas le bon endroit ? Recherchez à nouveau ↩',
     },
     feedback: {
       inline_cta:          'Donnez votre avis',
