@@ -7,7 +7,7 @@ import os
 from contextlib import asynccontextmanager
 
 # Import routers
-from app.api import health, recommend, hospitals, forecasts, feedback, dashboard
+from app.api import health, recommend, hospitals, forecasts, feedback, dashboard, geocode
 from app.core import config, logging, security
 from app.core.logging import logger
 
@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="ER Recommender System API",
     description="API for recommending emergency room facilities based on congestion and proximity",
-    version="1.0.0",
+    version="1.1.0",
     lifespan=lifespan,
 )
 
@@ -56,6 +56,7 @@ app.include_router(hospitals.router, prefix="/api")
 app.include_router(forecasts.router, prefix="/api")
 app.include_router(feedback.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
+app.include_router(geocode.router, prefix="/api")
 
 
 @app.get("/")
@@ -63,6 +64,6 @@ async def root():
     """Root endpoint."""
     return { 
         "message": "ER Recommender System API",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "status": "running"
     }
