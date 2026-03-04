@@ -28,17 +28,18 @@ export default function Home() {
         lat = coords.lat;
         lng = coords.lng;
       } else {
+        // forward geocoding via backend proxy
         const geoRes = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,
-          { headers: { 'Accept-Language': 'en' } }
+          `/api/geocode/forward?q=${encodeURIComponent(address)}`
         );
-        const geoData = await geoRes.json();
-        if (!geoData.length) {
-          setError('Address not found. Please try a more specific address.');
+        if (!geoRes.ok) {
+          const body = await geoRes.json().catch(() => ({}));
+          setError(body.detail ?? 'Address not found. Please try a more specific address.');
           return;
         }
-        lat = parseFloat(geoData[0].lat);
-        lng = parseFloat(geoData[0].lon);
+        const geoData = await geoRes.json();
+        lat = geoData.lat;
+        lng = geoData.lng;
       }
       const res = await getRecommendations(lat, lng);
       setResults(res.data.results);
@@ -61,20 +62,21 @@ export default function Home() {
       async (pos) => {
         const { latitude, longitude } = pos.coords;
 
-        // ← #2 store raw coords for direct use during search (skips forward geocoding)
+        // store raw coords for direct use during search (skips forward geocoding)
         setCoords({ lat: latitude, lng: longitude });
 
-        // ← #2 reverse geocode to show a human-readable address in the input field
+        // reverse geocoding via backend proxy
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-            { headers: { 'Accept-Language': 'en' } }
+            `/api/geocode/reverse?lat=${latitude}&lng=${longitude}`
           );
-          const data = await res.json();
-          // use display_name if available, fall back to raw coords only if reverse geocoding fails
-          setAddress(data.display_name ?? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setAddress(data.address);
+          } else {
+            setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          }
         } catch {
-          // silent fallback — coords still stored and work for search
           setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
         }
 
@@ -90,8 +92,6 @@ export default function Home() {
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
-    // ← #2 clear stored coords when user manually edits the field
-    //    so the next search re-geocodes the typed address instead of using stale coords
     setCoords(null);
   };
 
