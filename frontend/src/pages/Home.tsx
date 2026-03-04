@@ -12,12 +12,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false); // ← #1
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address.trim()) return;
     setLoading(true);
     setError(null);
+    setResults([]);        // ← #1 clear stale results before each new search
+    setHasSearched(false); // ← #1 reset flag so empty state doesn't flash prematurely
     try {
       let lat: number, lng: number;
       if (coords) {
@@ -38,6 +41,7 @@ export default function Home() {
       }
       const res = await getRecommendations(lat, lng);
       setResults(res.data.results);
+      setHasSearched(true); // ← #1 mark search as completed (whether results or empty)
     } catch {
       setError(t.home.error_fetch);
     } finally {
@@ -168,6 +172,24 @@ export default function Home() {
         </form>
         {error && <p className="error-msg">{error}</p>}
       </section>
+
+      {/* ← #1 Empty state — only shown after a completed search with zero results */}
+      {!loading && hasSearched && results.length === 0 && !error && (
+        <section className="results-section">
+          <div className="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="empty-state-icon">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <p className="empty-state-title">
+              {t.home.no_results_title}
+            </p>
+            <p className="empty-state-body">
+              {t.home.no_results_body}
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Results */}
       {results.length > 0 && (

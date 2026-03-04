@@ -43,6 +43,8 @@ export const translations = {
       error_geo:           'Unable to get your location. Please enter your address manually.',
       error_fetch:         'Failed to fetch recommendations. Please try again.',
       error_geo_unsupported: 'Geolocation is not supported by your browser.',
+      no_results_title: "No emergency rooms found nearby",
+      no_results_body: "No ERs were found within the search radius. Try a different address or a more central location.",
     },
     feedback: {
       inline_cta:          'Share your feedback',
@@ -223,6 +225,8 @@ export const translations = {
       error_geo:           "Impossible d'obtenir votre position. Veuillez entrer votre adresse manuellement.",
       error_fetch:         'Échec de la récupération. Veuillez réessayer.',
       error_geo_unsupported: "La géolocalisation n'est pas supportée par votre navigateur.",
+      no_results_title: "Aucune urgence trouvée à proximité",
+      no_results_body: "Aucune urgence n'a été trouvée dans le rayon de recherche. Essayez une adresse différente ou un emplacement plus central.",
     },
     feedback: {
       inline_cta:          'Donnez votre avis',
