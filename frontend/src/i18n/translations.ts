@@ -229,7 +229,7 @@ export const translations = {
       error_geo_unsupported: "La géolocalisation n'est pas supportée par votre navigateur.",
       no_results_title: "Aucune urgence trouvée à proximité",
       no_results_body: "Aucune urgence n'a été trouvée dans le rayon de recherche. Essayez une adresse différente ou un emplacement plus central.",
-      resolved_location_prefix: 'Résultats à proximité du :',
+      resolved_location_prefix: 'Résultats à proximité de :',
       resolved_location_retry: 'Pas le bon endroit ? Recherchez à nouveau ↩',
     },
     feedback: {
