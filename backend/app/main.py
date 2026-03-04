@@ -15,12 +15,12 @@ logging.setup_logging()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Satrt APScheduler only in non-production environments
+    # Start APScheduler only in non-production environments
     scheduler = None
-    if os.getenv("ENVIRONMENT", "local") != "production":
+    if os.getenv("ENVIRONMENT", "dev") != "prod":
         from app import scheduler as s
         scheduler = s.start()
-    else :
+    else:
         logger.info("Production environment - skipping APScheduler startup (jobs handled by Azure Container App Job)")
     
     yield
