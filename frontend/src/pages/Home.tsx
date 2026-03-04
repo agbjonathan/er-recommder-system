@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react'; // ← #4 added useRef
 import { getRecommendations } from '../api/client';
 import type { Hospital } from '../api/client';
 import { useLang } from '../i18n/LangContext';
@@ -13,6 +13,8 @@ export default function Home() {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [resolvedLocation, setResolvedLocation] = useState<string | null>(null); 
+  const inputRef = useRef<HTMLInputElement>(null); // for focusing input on "search again"
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,12 +23,15 @@ export default function Home() {
     setError(null);
     setResults([]);
     setHasSearched(false);
+    setResolvedLocation(null); // clear previous resolved location on each new search
     try {
       let lat: number, lng: number;
       if (coords) {
         // coords already resolved (from locate button) — skip forward geocoding
         lat = coords.lat;
         lng = coords.lng;
+        // for locate flow, resolved location is already in the address input
+        setResolvedLocation(address);
       } else {
         // forward geocoding via backend proxy
         const geoRes = await fetch(
@@ -40,6 +45,7 @@ export default function Home() {
         const geoData = await geoRes.json();
         lat = geoData.lat;
         lng = geoData.lng;
+        setResolvedLocation(geoData.display_name); // store what Nominatim resolved to
       }
       const res = await getRecommendations(lat, lng);
       setResults(res.data.results);
@@ -49,6 +55,17 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Search again" handler — resets state and focuses the input
+  const handleSearchAgain = () => {
+    setResults([]);
+    setHasSearched(false);
+    setResolvedLocation(null);
+    setCoords(null);
+    setError(null);
+    inputRef.current?.focus();
+    inputRef.current?.select();
   };
 
   const handleLocateClick = () => {
@@ -160,6 +177,7 @@ export default function Home() {
           <label className="search-label">{t.home.address_label}</label>
           <div className="search-row">
             <input
+              ref={inputRef} 
               type="text"
               value={address}
               onChange={handleAddressChange}
@@ -201,10 +219,10 @@ export default function Home() {
               <circle cx="12" cy="10" r="3"/>
             </svg>
             <p className="empty-state-title">
-              {t.home.no_results_title ?? 'No emergency rooms found nearby'}
+              {t.home.no_results_title}
             </p>
             <p className="empty-state-body">
-              {t.home.no_results_body ?? 'No ERs were found within the search radius. Try a different address or a more central location.'}
+              {t.home.no_results_body}
             </p>
           </div>
         </section>
@@ -213,6 +231,30 @@ export default function Home() {
       {/* Results */}
       {results.length > 0 && (
         <section className="results-section">
+
+          {/* ← #4 Resolved location banner — shown above results */}
+          {resolvedLocation && (
+            <div className="resolved-location-banner">
+              <div className="resolved-location-left">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="resolved-location-icon">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span className="resolved-location-label">
+                  {t.home.resolved_location_prefix}{' '}
+                  <strong>{resolvedLocation}</strong>
+                </span>
+              </div>
+              <button
+                type="button"
+                className="resolved-location-retry"
+                onClick={handleSearchAgain}
+              >
+                {t.home.resolved_location_retry}
+              </button>
+            </div>
+          )}
+
           <div className="results-header">
             <h2 className="results-title">
               {t.home.results_title}
