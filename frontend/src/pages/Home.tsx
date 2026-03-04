@@ -12,18 +12,19 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false); // ← #1
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address.trim()) return;
     setLoading(true);
     setError(null);
-    setResults([]);        // ← #1 clear stale results before each new search
-    setHasSearched(false); // ← #1 reset flag so empty state doesn't flash prematurely
+    setResults([]);
+    setHasSearched(false);
     try {
       let lat: number, lng: number;
       if (coords) {
+        // coords already resolved (from locate button) — skip forward geocoding
         lat = coords.lat;
         lng = coords.lng;
       } else {
@@ -41,7 +42,7 @@ export default function Home() {
       }
       const res = await getRecommendations(lat, lng);
       setResults(res.data.results);
-      setHasSearched(true); // ← #1 mark search as completed (whether results or empty)
+      setHasSearched(true);
     } catch {
       setError(t.home.error_fetch);
     } finally {
@@ -59,8 +60,24 @@ export default function Home() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
+
+        // ← #2 store raw coords for direct use during search (skips forward geocoding)
         setCoords({ lat: latitude, lng: longitude });
-        setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+
+        // ← #2 reverse geocode to show a human-readable address in the input field
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+            { headers: { 'Accept-Language': 'en' } }
+          );
+          const data = await res.json();
+          // use display_name if available, fall back to raw coords only if reverse geocoding fails
+          setAddress(data.display_name ?? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        } catch {
+          // silent fallback — coords still stored and work for search
+          setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        }
+
         setLocating(false);
       },
       () => {
@@ -73,6 +90,8 @@ export default function Home() {
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
+    // ← #2 clear stored coords when user manually edits the field
+    //    so the next search re-geocodes the typed address instead of using stale coords
     setCoords(null);
   };
 
@@ -173,7 +192,7 @@ export default function Home() {
         {error && <p className="error-msg">{error}</p>}
       </section>
 
-      {/* ← #1 Empty state — only shown after a completed search with zero results */}
+      {/* Empty state — only shown after a completed search with zero results */}
       {!loading && hasSearched && results.length === 0 && !error && (
         <section className="results-section">
           <div className="empty-state">
@@ -182,10 +201,10 @@ export default function Home() {
               <circle cx="12" cy="10" r="3"/>
             </svg>
             <p className="empty-state-title">
-              {t.home.no_results_title}
+              {t.home.no_results_title ?? 'No emergency rooms found nearby'}
             </p>
             <p className="empty-state-body">
-              {t.home.no_results_body}
+              {t.home.no_results_body ?? 'No ERs were found within the search radius. Try a different address or a more central location.'}
             </p>
           </div>
         </section>
