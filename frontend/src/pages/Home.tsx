@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { getRecommendations } from '../api/client';
 import type { Hospital } from '../api/client';
 import { useLang } from '../i18n/LangContext';
@@ -12,37 +12,56 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [resolvedLocation, setResolvedLocation] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address.trim()) return;
     setLoading(true);
     setError(null);
+    setResults([]);
+    setHasSearched(false);
+    setResolvedLocation(null);
     try {
       let lat: number, lng: number;
       if (coords) {
         lat = coords.lat;
         lng = coords.lng;
+        setResolvedLocation(address);
       } else {
         const geoRes = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,
-          { headers: { 'Accept-Language': 'en' } }
+          `/api/geocode/forward?q=${encodeURIComponent(address)}`
         );
-        const geoData = await geoRes.json();
-        if (!geoData.length) {
-          setError('Address not found. Please try a more specific address.');
+        if (!geoRes.ok) {
+          const body = await geoRes.json().catch(() => ({}));
+          setError(body.detail ?? t.home.error_address);
           return;
         }
-        lat = parseFloat(geoData[0].lat);
-        lng = parseFloat(geoData[0].lon);
+        const geoData = await geoRes.json();
+        lat = geoData.lat;
+        lng = geoData.lng;
+        setResolvedLocation(geoData.display_name);
       }
       const res = await getRecommendations(lat, lng);
       setResults(res.data.results);
+      setHasSearched(true);
     } catch {
       setError(t.home.error_fetch);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearchAgain = () => {
+    setResults([]);
+    setHasSearched(false);
+    setResolvedLocation(null);
+    setCoords(null);
+    setError(null);
+    inputRef.current?.focus();
+    inputRef.current?.select();
   };
 
   const handleLocateClick = () => {
@@ -56,7 +75,19 @@ export default function Home() {
       async (pos) => {
         const { latitude, longitude } = pos.coords;
         setCoords({ lat: latitude, lng: longitude });
-        setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        try {
+          const res = await fetch(
+            `/api/geocode/reverse?lat=${latitude}&lng=${longitude}`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            setAddress(data.address);
+          } else {
+            setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          }
+        } catch {
+          setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        }
         setLocating(false);
       },
       () => {
@@ -137,6 +168,7 @@ export default function Home() {
           <label className="search-label">{t.home.address_label}</label>
           <div className="search-row">
             <input
+              ref={inputRef}
               type="text"
               value={address}
               onChange={handleAddressChange}
@@ -168,6 +200,48 @@ export default function Home() {
         </form>
         {error && <p className="error-msg">{error}</p>}
       </section>
+
+      {/* ── Resolved location banner — shown after any completed search,
+           whether results were found or not ── */}
+      {!loading && hasSearched && resolvedLocation && (
+        <div className="resolved-location-banner">
+          <div className="resolved-location-left">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="resolved-location-icon">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span className="resolved-location-label">
+              {t.home.resolved_location_prefix}{' '}
+              <strong>{resolvedLocation}</strong>
+            </span>
+          </div>
+          <button
+            type="button"
+            className="resolved-location-retry"
+            onClick={handleSearchAgain}
+          >
+            {t.home.resolved_location_retry}
+          </button>
+        </div>
+      )}
+
+      {/* Empty state — only shown after a completed search with zero results */}
+      {!loading && hasSearched && results.length === 0 && !error && (
+        <section className="results-section">
+          <div className="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="empty-state-icon">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <p className="empty-state-title">
+              {t.home.no_results_title}
+            </p>
+            <p className="empty-state-body">
+              {t.home.no_results_body}
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Results */}
       {results.length > 0 && (

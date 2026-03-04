@@ -1,3 +1,7 @@
 from app.ml.evaluate_forecasts import evaluate_forecasts
-if __name__ == "__main__":
+
+def run():
     evaluate_forecasts()
+
+if __name__ == "__main__":
+    run()

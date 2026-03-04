@@ -89,7 +89,6 @@ class Forecast(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
-
 class ForecastError(Base):
     __tablename__ = "forecast_errors"
 
