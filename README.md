@@ -30,7 +30,7 @@ Production deployment documentation for the ER Recommender System on Azure.
 - Access to the ACR and Container App resources in the Azure subscription
 - GitHub repository secrets configured:
   - `VITE_API_URL` — production API base URL
-  - `AZURE_STATIC_WEB_APPS_API_TOKEN_RED_POND_0BD3F550F` — deploy token for Static Web Apps
+  - `AZURE_STATIC_WEB_APPS_API_TOKEN_RED_POND_XXXXXXXXX ` — deploy token for Static Web Apps
 
 ## Required environment variables
 
@@ -73,13 +73,13 @@ az containerapp update \
     DATABASE_URL=<connection-string>
 ```
 
-### Step 2 — Verify backend (mandatory before frontend deploy)
+### Step 2 — Verify backend (Check before frontend deploy)
 
 ```bash
 curl https://<container-app-hostname>/api/health
 ```
 
-You should receive a `200 OK` response. **Do not proceed to step 3 until the health check passes.**
+You should receive a `200 OK` response. **Only proceed to step 3 until the health check passes.**
 
 ### Step 3 — Deploy frontend
 
