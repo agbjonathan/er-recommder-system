@@ -119,7 +119,7 @@ docker compose up --force-recreate
 | Branch | Purpose |
 |--------|---------|
 | `main` | Primary development branch — all feature PRs target here |
-| `azure` | Deployment branch — **never commit directly to `azure`**; merge from `main` only |
+| `azure` | Deployment branch — ; merge from `main` only |
 
 ## License
 
